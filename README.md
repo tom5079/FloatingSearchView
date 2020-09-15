@@ -111,11 +111,11 @@ Listen to home (back arrow) button clicks:
 
 **Configure menu items:**
 
-![Alt text](/images/150sg9.gif)
+![Alt text](https://github.com/arimorty/floatingsearchview/blob/master/images/150sg9.gif)
 
 Add a menu resource
 ```xml
-    app:floatingSearch_menu="@menu/menu_main"
+app:floatingSearch_menu="@menu/menu_main"
 ```
 
 In the menu resource, set items' ```app:showAsAction="[insert one of the options described in the table below]"```
@@ -140,16 +140,10 @@ In the menu resource, set items' ```app:showAsAction="[insert one of the options
 
 Listen for item selections 
 ```  
-   mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
-      @Override
-      public void onMenuItemSelected(MenuItem item) {                  
-            
-      }
-   });
+search_view.onMenuItemClickListener = { item ->
+
+}
 ```
-
-<br/>
-
 
 **Configure suggestion item:**
 
@@ -167,7 +161,7 @@ search_view.onBindSuggestionCallback = { suggestionView, leftIcon, textView, ite
 });
 ``` 
 
-**Styling:**
+**Styling:**  
 Styling is currently not supported.
 
 License
