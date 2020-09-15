@@ -170,26 +170,6 @@ search_view.onBindSuggestionCallback = { suggestionView, leftIcon, textView, ite
 **Styling:**
 ## Styling is currently not supported yet
 
-<img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/style_light.png" width="350"/>
-<img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/style_dark.png" width="350"/>
-
-Available styling:
-
-```xml
-   <style name="SearchView">
-           <item name="floatingSearch_backgroundColor"></item>
-           <item name="floatingSearch_viewSearchInputTextColor"></item>
-           <item name="floatingSearch_viewSuggestionItemTextColor"></item>
-           <item name="floatingSearch_hintTextColor"></item>
-           <item name="floatingSearch_dividerColor"></item>
-           <item name="floatingSearch_clearBtnColor"></item>
-           <item name="floatingSearch_leftActionColor"></item>
-           <item name="floatingSearch_menuItemIconColor"></item>
-           <item name="floatingSearch_suggestionRightIconColor"></item>
-           <item name="floatingSearch_actionMenuOverflowColor"></item>
-   </style>
-```
-
 
 License
 =======
