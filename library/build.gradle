@@ -20,6 +20,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'org.jetbrains.dokka'
 
 android {
     compileSdkVersion 30
@@ -28,8 +29,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode versionCode
+        versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -60,6 +61,30 @@ android {
     }
 }
 
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'floatingsearchview'
+
+    publishedGroupId = 'xyz.quaver'
+    libraryName = 'FloatingSearchView'
+    artifact = 'floatingsearchview'
+
+    libraryDescription = 'Complete Kotlin port of arimorty/FloatingSearchView'
+
+    siteUrl = 'https://github.com/tom5079/FloatingSearchView'
+    gitUrl = 'https://github.com/tom5079/FloatingSearchView.git'
+
+    libraryVersion = version
+
+    developerId = 'tom5079'
+    developerName = 'tom5079'
+    developerEmail = 'tom5079@naver.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -73,5 +98,11 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-
 }
+
+tasks.withType(Javadoc).all {
+    enabled = false
+}
+
+apply from: 'https://raw.githubusercontent.com/tom5079/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/tom5079/JCenter/master/bintrayv1.gradle'
