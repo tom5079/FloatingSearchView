@@ -2,6 +2,8 @@ Floating Search View
 =============
 ## Complete Kotlin/AndroidX port of [arimorty/FloatingSearchView](https://github.com/arimorty/floatingsearchview)
 
+## WIP
+
 An implementation of a floating search box with search suggestions, also called persistent search bar.
 
 ![Alt text](https://github.com/arimorty/floatingsearchview/blob/master/images/150696.gif)
