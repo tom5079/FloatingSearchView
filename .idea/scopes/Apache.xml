@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Apache" pattern="file[group:app]:*//*||file[group:library]:*//*" />
+</component>

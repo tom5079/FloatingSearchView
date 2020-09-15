@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~     tom5079/FloatingSearchView was ported from arimorty/FloatingSearchView
+  ~
+  ~     Copyright 2015 Ari C.
+  ~     Copyright 2020 tom5079
+  ~
+  ~     Licensed under the Apache License, Version 2.0 (the "License");
+  ~     you may not use this file except in compliance with the License.
+  ~     You may obtain a copy of the License at
+  ~
+  ~         http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~     Unless required by applicable law or agreed to in writing, software
+  ~     distributed under the License is distributed on an "AS IS" BASIS,
+  ~     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~     See the License for the specific language governing permissions and
+  ~     limitations under the License.
+  -->
+
+<resources>
+    <declare-styleable name="FloatingSearchView">
+        <attr name="searchBarMarginTop" format="dimension"/>
+        <attr name="searchBarMarginLeft" format="dimension"/>
+        <attr name="searchBarMarginRight" format="dimension"/>
+        <attr name="suggestionTextSize" format="dimension"/>
+        <attr name="searchInputTextSize" format="dimension"/>
+        <attr name="showMenuAction" format="boolean"/>
+        <attr name="dismissFocusOnItemSelection" format="boolean"/>
+        <attr name="leftActionMode">
+            <enum name="noLeftAction" value="-1" />
+            <enum name="showHamburger" value="0" />
+            <enum name="showSearch" value="1" />
+            <enum name="showHome" value="2" />
+        </attr>
+        <attr name="showVoiceInput" format="boolean"/>
+        <attr name="showSearchKey" format="boolean"/>
+        <attr name="voiceRecHint" format="string"/>
+        <attr name="searchHint" format="string"/>
+        <attr name="dismissOnOutsideTouch" format="boolean"/>
+        <attr name="showMoveUpSuggestion" format="boolean"/>
+        <attr name="suggestionAnimDuration" format="integer"/>
+        <attr name="hideOverflowMenuWhenFocused" format="boolean"/>
+        <attr name="showOverFlowMenu" format="boolean"/>
+        <attr name="close_search_on_keyboard_dismiss" format="boolean"/>
+        <attr name="menu" format="reference"/>
+        <attr name="dimBackground" format="boolean"/>
+    </declare-styleable>
+</resources>
