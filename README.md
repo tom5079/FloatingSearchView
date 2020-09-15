@@ -168,8 +168,7 @@ search_view.onBindSuggestionCallback = { suggestionView, leftIcon, textView, ite
 ``` 
 
 **Styling:**
-## Styling is currently not supported yet
-
+Styling is currently not supported.
 
 License
 =======
