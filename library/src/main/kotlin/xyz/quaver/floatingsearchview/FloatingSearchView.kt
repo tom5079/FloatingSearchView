@@ -59,14 +59,6 @@ import xyz.quaver.floatingsearchview.util.adapter.OnItemTouchListenerAdapter
 import kotlin.math.abs
 import kotlin.math.min
 
-//The CardView's top or bottom height used for its shadow
-private const val CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT = 4
-
-//The CardView's (default) corner radius height
-private const val CARD_VIEW_CORNERS_HEIGHT = 4
-private const val CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT =
-    CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT + CARD_VIEW_CORNERS_HEIGHT
-
 private const val CLEAR_BTN_FADE_ANIM_DURATION: Long = 500
 private const val CLEAR_BTN_WIDTH_DP = 48
 
@@ -83,7 +75,7 @@ private const val MENU_ICON_ANIM_DURATION = 250L
 
 private val SUGGEST_ITEM_ADD_ANIM_INTERPOLATOR: Interpolator = LinearInterpolator()
 
-class FloatingSearchView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : FrameLayout(context, attrs) {
+open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : FrameLayout(context, attrs) {
 
     enum class LeftActionMode(val value: Int){
         NO_ACTION(-1),
@@ -112,7 +104,7 @@ class FloatingSearchView @JvmOverloads constructor(context: Context, attrs: Attr
         fun onSuggestionClicked(searchSuggestion: SearchSuggestion?)
         fun onSearchAction(currentQuery: String?)
     }
-    interface OnLeftMenuClickListener {
+    interface OnMenuStatusChangeListener {
         fun onMenuOpened()
         fun onMenuClosed()
     }
@@ -244,6 +236,8 @@ class FloatingSearchView @JvmOverloads constructor(context: Context, attrs: Attr
                 else
                     EditorInfo.IME_ACTION_NONE
         }
+
+    private var elevation: Int = dpToPx(4)
     private var menuOpen = false
     private var menuId = -1
     private var skipQueryFocusChangeEvent = false
@@ -277,9 +271,9 @@ class FloatingSearchView @JvmOverloads constructor(context: Context, attrs: Attr
     var onFocusChangeListener: OnFocusChangeListener? = null
     var onSearchListener: OnSearchListener? = null
     var onQueryChangeListener: ((oldQuery: String, newQuery: String) -> Unit)? = null
-    var onMenuClickListener: OnLeftMenuClickListener? = null
+    var onMenuStatusChangeListener: OnMenuStatusChangeListener? = null
     var onHomeActionClickListener: (() -> Unit)? = null
-    var onLeftMenuClickListener: View.OnClickListener? = null
+    var onLeftMenuClickListener: OnClickListener? = null
     var onMenuItemClickListener: ((item: MenuItem) -> Unit)? = null
     var onClearSearchActionListener: (() -> Unit)? = null
     var onSuggestionsListHeightChanged: ((newHeight: Float) -> Unit)? = null
@@ -342,6 +336,8 @@ class FloatingSearchView @JvmOverloads constructor(context: Context, attrs: Attr
 
         with(search_bar_text) {
             addTextChangedListener(onTextChanged = { s, start, before, count ->
+                val clear_btn = this@FloatingSearchView.clear_btn
+
                 if (skipTextChangeEvent || !isSearchFocused)
                     skipTextChangeEvent = false
                 else {
@@ -467,6 +463,20 @@ class FloatingSearchView @JvmOverloads constructor(context: Context, attrs: Attr
     }
 
     private fun applyAttributes(attrs: TypedArray) = try {
+        elevation = attrs.getDimensionPixelSize(
+            R.styleable.FloatingSearchView_arrelevation,
+            dpToPx(4)
+        ).also { elevation ->
+            search_query_section.cardElevation = elevation.toFloat()
+            suggestions_list_container.cardElevation = elevation.toFloat()
+            search_query_section.maxCardElevation = elevation.toFloat()
+            suggestions_list_container.maxCardElevation = elevation.toFloat()
+
+            search_query_section_parent.updateLayoutParams<LinearLayout.LayoutParams> {
+                setMargins(0, 0, 0, -3*elevation/2)
+            }
+        }
+
         listOf(
             R.styleable.FloatingSearchView_searchBarMarginLeft,
             R.styleable.FloatingSearchView_searchBarMarginLeft,
@@ -475,12 +485,12 @@ class FloatingSearchView @JvmOverloads constructor(context: Context, attrs: Attr
             search_query_section.updateLayoutParams<LayoutParams> {
                 setMargins(left, top, right, 0)
             }
-            divider.updateLayoutParams<LayoutParams> {
-                val cornerRadius = search_query_section.radius.toInt()
-                setMargins(left + cornerRadius, 0, right + cornerRadius, bottomMargin)
-            }
             search_suggestions_section.updateLayoutParams<LinearLayout.LayoutParams> {
                 setMargins(left, 0, right, 0)
+            }
+            divider.updateLayoutParams<LayoutParams> {
+                val cornerRadius = search_query_section.radius.toInt()
+                setMargins(left+elevation+cornerRadius, 0, right+elevation+cornerRadius, 3*elevation/2)
             }
         }
 
@@ -538,7 +548,7 @@ class FloatingSearchView @JvmOverloads constructor(context: Context, attrs: Attr
         super.onLayout(changed, left, top, right, bottom)
         
         if (isInitialLayout) {
-            val addedHeight = 3* dpToPx(CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT)
+            val addedHeight = (3*(elevation+search_query_section.radius)).toInt()
             val finalHeight = search_suggestions_section.height + addedHeight
             
             with(search_suggestions_section) {
@@ -754,7 +764,7 @@ class FloatingSearchView @JvmOverloads constructor(context: Context, attrs: Attr
     fun openMenu(withAnim: Boolean) {
         menuOpen = true
         openMenuDrawable(menuBtnDrawable, withAnim)
-        onMenuClickListener?.onMenuOpened()
+        onMenuStatusChangeListener?.onMenuOpened()
     }
 
     /**
@@ -767,7 +777,7 @@ class FloatingSearchView @JvmOverloads constructor(context: Context, attrs: Attr
     fun closeMenu(withAnim: Boolean) {
         menuOpen = false
         closeMenuDrawable(menuBtnDrawable, withAnim)
-        onMenuClickListener?.onMenuClosed()
+        onMenuStatusChangeListener?.onMenuClosed()
     }
 
     fun clearSuggestions() = swapSuggestions(emptyList())
@@ -836,7 +846,7 @@ class FloatingSearchView @JvmOverloads constructor(context: Context, attrs: Attr
 
     fun attachNavigationDrawerToMenuButton(drawerLayout: DrawerLayout) {
         drawerLayout.addDrawerListener(drawerListener)
-        onMenuClickListener = object: OnLeftMenuClickListener {
+        onMenuStatusChangeListener = object: OnMenuStatusChangeListener {
             override fun onMenuOpened() {
                 drawerLayout.openDrawer(GravityCompat.START)
             }
@@ -965,9 +975,8 @@ class FloatingSearchView @JvmOverloads constructor(context: Context, attrs: Attr
         newSearchSuggestions: List<SearchSuggestion>,
         withAnim: Boolean
     ): Boolean {
-        val cardTopBottomShadowPadding: Int =
-            dpToPx(CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT)
-        val cardRadiusSize: Int = dpToPx(CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT)
+        val cardTopBottomShadowPadding: Int = search_query_section.radius.toInt()
+        val cardRadiusSize: Int = search_query_section.radius.toInt()
 
         val visibleSuggestionHeight: Int = calculateSuggestionItemsHeight(
             newSearchSuggestions,

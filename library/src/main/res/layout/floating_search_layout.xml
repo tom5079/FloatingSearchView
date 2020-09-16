@@ -28,6 +28,7 @@
     android:orientation="vertical">
 
     <FrameLayout
+        android:id="@+id/search_query_section_parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -38,13 +39,17 @@
             <include layout="@layout/search_query_section" />
         </FrameLayout>
 
-        <View
+        <FrameLayout
             android:id="@+id/divider"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:visibility="invisible" />
+            android:visibility="invisible">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"/>
+        </FrameLayout>
     </FrameLayout>
 
     <include layout="@layout/search_suggestions_section" />

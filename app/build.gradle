@@ -29,8 +29,8 @@ android {
         applicationId "xyz.quaver.floatingsearchview.sample"
         minSdkVersion 14
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode versionCode
+        versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

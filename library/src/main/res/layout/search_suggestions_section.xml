@@ -28,9 +28,11 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/suggestions_list_container"
-        app:cardElevation="8dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardUseCompatPadding="true">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/suggestions_list"

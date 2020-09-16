@@ -44,7 +44,7 @@ import xyz.quaver.floatingsearchview.util.dpToPx
 private const val HIDE_IF_ROOM_ITEMS_ANIM_DURATION = 400L
 private const val SHOW_IF_ROOM_ITEMS_ANIM_DURATION = 450L
 
-class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(context, attrs) {
+class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : LinearLayout(context, attrs, defStyle) {
 
     private val actionDimension : Int = resources.getDimensionPixelSize(R.dimen.square_button_size)
 

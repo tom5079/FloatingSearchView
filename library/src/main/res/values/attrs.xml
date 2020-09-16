@@ -45,5 +45,6 @@
         <attr name="close_search_on_keyboard_dismiss" format="boolean"/>
         <attr name="menu" format="reference"/>
         <attr name="dimBackground" format="boolean"/>
+        <attr name="arrelevation" format="dimension"/>
     </declare-styleable>
 </resources>

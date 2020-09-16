@@ -2,8 +2,6 @@ Floating Search View
 =============
 ## Complete Kotlin/AndroidX port of [arimorty/FloatingSearchView](https://github.com/arimorty/floatingsearchview)
 
-## WIP
-
 An implementation of a floating search box with search suggestions, also called persistent search bar.
 
 ![Alt text](https://github.com/arimorty/floatingsearchview/blob/master/images/150696.gif)
@@ -18,7 +16,7 @@ Usage
 
 1. In your dependencies, add
 ```
-implementation 'xyz.quaver:floatingsearchview:0.1'
+implementation 'xyz.quaver:floatingsearchview:1.0'
 ```
 2. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
    up the full width and height of the screen
@@ -35,10 +33,11 @@ implementation 'xyz.quaver:floatingsearchview:0.1'
     app:searchBarMarginTop="@dimen/search_view_inset"
     app:searchBarMarginRight="@dimen/search_view_inset"
     app:searchHint="Search..."
-    app:suggestionsListAnimDuration="250"
+    app:suggestionsAnimDuration="250"
     app:showSearchKey="false"
     app:leftActionMode="showHamburger"
     app:menu="@menu/menu_main"
+    app:elevation="4dp"
     app:close_search_on_keyboard_dismiss="true"/>
 ```
 

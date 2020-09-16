@@ -109,8 +109,8 @@ class MenuPopupHelper(
 
     fun show() = tryShow().also{ if (!it) error("MenuPopupHelper cannot be used without an anchor") }
     fun tryShow(): Boolean {
-        val popup = ListPopupWindow(context, null, popupStyleAttr, popupStyleRes).also {
-            this.popup = it
+        val popup = ListPopupWindow(context, null, popupStyleAttr, popupStyleRes).also { popup ->
+            this.popup = popup
         }
 
         popup.setOnDismissListener(this)
