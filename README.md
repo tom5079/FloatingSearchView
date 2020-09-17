@@ -98,14 +98,14 @@ Listen to *hamburger* button clicks:
 ```
 
 To quickly connect your **NavigationDrawer** to the *hamburger* button:
-```
-   mSearchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
+```kotlin
+menu_view.attachNavigationDrawerToMenuButton(mDrawerLayout);
 ```
 
 Listen to home (back arrow) button clicks:
-```
-  mSearchView.setOnHomeActionClickListener(
-         new FloatingSearchView.OnHomeActionClickListener() { ... });       
+```kotlin
+menu_view.setOnHomeActionClickListener(
+      new FloatingSearchView.OnHomeActionClickListener() { ... });       
 ```
 
 <br/>
@@ -116,7 +116,7 @@ Listen to home (back arrow) button clicks:
 
 Add a menu resource
 ```xml
-app:floatingSearch_menu="@menu/menu_main"
+app:=menu="@menu/menu_main"
 ```
 
 In the menu resource, set items' ```app:showAsAction="[insert one of the options described in the table below]"```
@@ -140,7 +140,7 @@ In the menu resource, set items' ```app:showAsAction="[insert one of the options
 </table>
 
 Listen for item selections 
-```  
+```kotlin
 search_view.onMenuItemClickListener = { item ->
 
 }
