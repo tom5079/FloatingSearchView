@@ -36,6 +36,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.view.SupportMenuInflater
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuItemImpl
+import androidx.appcompat.view.menu.SubMenuBuilder
 import androidx.core.content.ContextCompat
 import xyz.quaver.floatingsearchview.R
 import xyz.quaver.floatingsearchview.util.MenuPopupHelper
@@ -118,6 +119,9 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
                 setImageDrawable(it.icon)
 
                 setOnClickListener { _ ->
+                    (it.subMenu as? SubMenuBuilder)?.let { subMenu ->
+                        MenuPopupHelper(context, subMenu, this@MenuView).show()
+                    }
                     menuCallback?.onMenuItemSelected(menuBuilder, it)
                 }
             })

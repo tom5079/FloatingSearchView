@@ -20,7 +20,6 @@
 package xyz.quaver.floatingsearchview.suggestions
 
 import android.content.Context
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -93,9 +92,8 @@ class SearchSuggestionsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return LayoutInflater.from(context).inflate(R.layout.search_suggestion_item, parent, false).let {
+        return LayoutInflater.from(parent.context).inflate(R.layout.search_suggestion_item, parent, false).let {
             it.right_icon.setImageDrawable(rightIconDrawable)
-            it.body.setTextSize(TypedValue.COMPLEX_UNIT_PX, suggestionTextSize.toFloat())
 
             SearchSuggestionViewHolder(it, object: SearchSuggestionViewHolder.Listener {
                 override fun onItemClicked(adapterPosition: Int) {

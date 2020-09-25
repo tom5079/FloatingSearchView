@@ -19,9 +19,7 @@
 
 package xyz.quaver.floatingsearchview.sample.fragment;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +27,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -224,25 +222,13 @@ public class SlidingSearchResultsExampleFragment extends BaseExampleFragment {
         mSearchView.setOnBindSuggestionCallback((suggestionView, leftIcon, textView, item, itemPosition) -> {
             ColorSuggestion colorSuggestion = (ColorSuggestion) item;
 
-            String textColor = mIsDarkSearchTheme ? "#ffffff" : "#000000";
-            String textLight = mIsDarkSearchTheme ? "#bfbfbf" : "#787878";
-
             if (colorSuggestion.getIsHistory()) {
-                leftIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(),
-                        R.drawable.history, null));
+                leftIcon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.history));
 
                 /*TODO Util.setIconColor(leftIcon, Color.parseColor(textColor));*/
-                leftIcon.setAlpha(.36f);
             } else {
-                leftIcon.setAlpha(0.0f);
                 leftIcon.setImageDrawable(null);
             }
-
-            textView.setTextColor(Color.parseColor(textColor));
-            String text = colorSuggestion.getBody()
-                    .replaceFirst(mSearchView.getQuery(),
-                            "<font color=\"" + textLight + "\">" + mSearchView.getQuery() + "</font>");
-            textView.setText(Html.fromHtml(text));
 
             return Unit.INSTANCE;
         });

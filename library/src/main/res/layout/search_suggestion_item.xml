@@ -19,6 +19,7 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -36,7 +37,8 @@
         android:alpha="1"
         android:padding="@dimen/square_button_padding"
         android:visibility="visible"
-        android:layout_marginLeft="@dimen/search_bar_left_icon_left_margin" />
+        android:layout_marginLeft="@dimen/search_bar_left_icon_left_margin"
+        app:tint="?attr/colorControlNormal"/>
 
     <TextView
         android:id="@+id/body"
@@ -67,6 +69,7 @@
         android:rotation="45"
         android:src="@drawable/arrow_left"
         android:visibility="visible"
-        android:layout_marginRight="@dimen/search_bar_right_icon_right_margin" />
+        android:layout_marginRight="@dimen/search_bar_right_icon_right_margin"
+        app:tint="?attr/colorControlNormal" />
 
 </LinearLayout>

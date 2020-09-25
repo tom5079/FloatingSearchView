@@ -29,7 +29,17 @@
         android:title="@string/action_location"
         android:orderInCategory="2"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_my_location_black_24dp"/>
+        android:icon="@drawable/ic_my_location_black_24dp">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/main_menu_sort_newest"
+                    android:title="ABC"
+                    android:checked="true"/>
+                <item android:id="@+id/main_menu_sort_popular"
+                    android:title="DEF"/>
+            </group>
+        </menu>
+    </item>
     <item android:id="@+id/action_taxi"
         android:title="@string/action_taxi"
         android:orderInCategory="3"
