@@ -59,7 +59,7 @@ import xyz.quaver.floatingsearchview.util.adapter.OnItemTouchListenerAdapter
 import kotlin.math.abs
 import kotlin.math.min
 
-private const val CLEAR_BTN_FADE_ANIM_DURATION: Long = 500
+private const val CLEAR_BTN_FADE_ANIM_DURATION = 500L
 private const val CLEAR_BTN_WIDTH_DP = 48
 
 private const val LEFT_MENU_WIDTH_AND_MARGIN_START_DP = 52
@@ -153,7 +153,6 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                 moveSuggestionListToInitialPos()
                 search_suggestions_section.visibility = View.VISIBLE
                 if (dimBackground) animateBackground(BackgroundAnimation.FADE_IN)
-                handleOnVisibleMenuItemsWidthChanged(0)
                 menu_view.hideIfRoomItems(true)
                 transitionInLeftSection(true)
                 context.showSoftKeyboard(search_bar_text)
@@ -179,7 +178,6 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                 search_bar.requestFocus()
                 clearSuggestions()
                 if (dimBackground) animateBackground(BackgroundAnimation.FADE_OUT)
-                handleOnVisibleMenuItemsWidthChanged(0)
                 menu_view.showIfRoomItems(true)
                 transitionOutLeftSection(true)
                 clear_btn.visibility = View.GONE
@@ -321,15 +319,13 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
 
                 override fun onMenuModeChange(menu: MenuBuilder) {}
             }
-            onVisibleWidthChangedListener = {
-                handleOnVisibleMenuItemsWidthChanged(it)
-            }
         }
 
         with(clear_btn) {
             visibility = View.INVISIBLE
+            setImageDrawable(iconClear)
             setOnClickListener {
-                search_bar_text.setText("")
+                this@FloatingSearchView.search_bar_text.setText("")
                 onClearSearchActionListener?.invoke()
             }
         }
@@ -341,7 +337,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                 if (skipTextChangeEvent || !isSearchFocused)
                     skipTextChangeEvent = false
                 else {
-                    if (search_bar_text.text?.isNotEmpty() == true && clear_btn.visibility == View.INVISIBLE)
+                    if (this.text?.isNotEmpty() == true && clear_btn.visibility == View.INVISIBLE)
                         ViewCompat.animate(clear_btn)
                             .setDuration(CLEAR_BTN_FADE_ANIM_DURATION)
                             .withStartAction {
@@ -349,11 +345,10 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                                 clear_btn.visibility = View.VISIBLE
                             }
                             .alpha(1F)
-                            .start()
-                    else
+                    else if (this.text?.isEmpty() == true)
                         clear_btn.visibility = View.INVISIBLE
 
-                    val newQuery = search_bar_text.text.toString()
+                    val newQuery = this.text.toString()
 
                     if (isSearchFocused && query != newQuery)
                         onQueryChangeListener?.invoke(query, newQuery)
@@ -906,29 +901,6 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
 
     private fun moveSuggestionListToInitialPos() {
         suggestions_list_container.translationY = -suggestions_list_container.height.toFloat()
-    }
-
-    private fun handleOnVisibleMenuItemsWidthChanged(menuItemsWidth: Int) {
-        if (menuItemsWidth == 0) {
-            clear_btn.translationX = -dpToPx(4).toFloat()
-            search_bar_text.setPadding(
-                0, 0, dpToPx(
-                    if (isSearchFocused)
-                        CLEAR_BTN_WIDTH_DP + 4
-                    else
-                        18
-                ), 0
-            )
-        } else {
-            clear_btn.translationX = -menuItemsWidth.toFloat()
-            search_bar_text.setPadding(
-                0, 0,
-                if (isSearchFocused)
-                    menuItemsWidth + dpToPx(CLEAR_BTN_WIDTH_DP)
-                else
-                    menuItemsWidth, 0
-            )
-        }
     }
 
     private enum class BackgroundAnimation {

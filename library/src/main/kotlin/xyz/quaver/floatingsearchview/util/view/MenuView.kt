@@ -21,8 +21,6 @@
 
 package xyz.quaver.floatingsearchview.util.view
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
@@ -38,6 +36,7 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuItemImpl
 import androidx.appcompat.view.menu.SubMenuBuilder
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import xyz.quaver.floatingsearchview.R
 import xyz.quaver.floatingsearchview.util.MenuPopupHelper
 import xyz.quaver.floatingsearchview.util.dpToPx
@@ -67,7 +66,6 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
     private var hasOverflow = false
 
-    var onVisibleWidthChangedListener: ((Int) -> Unit)? = null
     var visibleWidth: Int = 0
         private set
 
@@ -143,10 +141,6 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         }
 
         actionItemsIds.forEach { menuBuilder.removeItem(it) }
-
-        onVisibleWidthChangedListener?.invoke(
-            actionDimension * childCount - if (hasOverflow) dpToPx(8) else 0
-        )
     }
 
     private fun createActionView(): ImageView =
@@ -187,34 +181,28 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         //add anims for moving showAlwaysItem views to the right
         val destTransX = ((actionDimension*diff) - if (hasOverflow) dpToPx(8) else 0).toFloat()
         (0 until actionItemSize).map { getChildAt(it) }.forEach {
-            it.animate().apply {
-                duration = if (withAnim) HIDE_IF_ROOM_ITEMS_ANIM_DURATION else 0
-                interpolator = AccelerateInterpolator()
-                translationX(destTransX)
-            }
+            ViewCompat.animate(it)
+                .setDuration(if (withAnim) HIDE_IF_ROOM_ITEMS_ANIM_DURATION else 0)
+                .apply { interpolator = AccelerateInterpolator() }
+                .translationX(destTransX)
+                .withEndAction {
+                    it.translationX = 0F
+                }
         }
 
         //add anims for moving to right and/or zooming out previously shown items
         (actionItemSize until actionItemSize + diff).map { Pair(it, getChildAt(it)) }.forEach { (i, view) ->
             view.isClickable = false
 
-            view.animate().apply {
-                duration = if (withAnim) HIDE_IF_ROOM_ITEMS_ANIM_DURATION else 0
-                if (i != childCount - 1)
-                    translationXBy(actionDimension.toFloat())
-                scaleX(.5F)
-                scaleY(.5F)
-                alpha(0F)
-
-                if (i == actionItemSize + diff - 1)
-                    setListener(object: AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            onVisibleWidthChangedListener?.invoke(
-                                actionDimension * childCount - if (hasOverflow) dpToPx(8) else 0
-                            )
-                        }
-                    })
-            }
+            ViewCompat.animate(view)
+                .setDuration(if (withAnim) HIDE_IF_ROOM_ITEMS_ANIM_DURATION else 0)
+                .apply { if (i != childCount - 1) translationXBy(actionDimension.toFloat()) }
+                .scaleX(.5F)
+                .scaleY(.5F)
+                .alpha(0F)
+                .withEndAction {
+                    view.visibility = GONE
+                }
         }
     }
 
@@ -240,28 +228,21 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
             view.isClickable = true
 
-            view.animate().apply {
-                duration = if (withAnim) SHOW_IF_ROOM_ITEMS_ANIM_DURATION else 0
-
-                interpolator = if (i > actionShowAlwaysItems.size - 1)
-                    LinearInterpolator()
-                else
-                    DecelerateInterpolator()
-
-                translationX(0F)
-                scaleX(1.0F)
-                scaleY(1.0F)
-                alpha(1.0F)
-
-                if (i == childCount - 1)
-                    setListener(object: AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            onVisibleWidthChangedListener?.invoke(
-                                actionDimension * childCount - if (hasOverflow) dpToPx(8) else 0
-                            )
-                        }
-                    })
-            }
+            ViewCompat.animate(view)
+                .withStartAction {
+                    view.visibility = VISIBLE
+                }
+                .setDuration(if (withAnim) SHOW_IF_ROOM_ITEMS_ANIM_DURATION else 0)
+                .apply {
+                    interpolator =
+                        if (i > actionShowAlwaysItems.size - 1)
+                            LinearInterpolator()
+                        else
+                            DecelerateInterpolator()
+                }.translationX(0F)
+                .scaleX(1.0F)
+                .scaleY(1.0F)
+                .alpha(1.0F)
         }
     }
 
