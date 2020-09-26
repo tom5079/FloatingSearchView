@@ -40,6 +40,7 @@ import androidx.core.view.ViewCompat
 import xyz.quaver.floatingsearchview.R
 import xyz.quaver.floatingsearchview.util.MenuPopupHelper
 import xyz.quaver.floatingsearchview.util.dpToPx
+import kotlin.math.min
 
 private const val HIDE_IF_ROOM_ITEMS_ANIM_DURATION = 400L
 private const val SHOW_IF_ROOM_ITEMS_ANIM_DURATION = 450L
@@ -159,20 +160,9 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
         actionShowAlwaysItems.clear()
 
-        val actionItemSize = menuItems.filter {
+        val actionItemSize = min(menuItems.filter {
             it.icon != null && it.requiresActionButton()
-        }.take(actionItems.size).also {
-            it.forEachIndexed { i, item ->
-                if (actionItems[i].itemId != item.itemId) {
-                    (getChildAt(i) as ImageView).apply {
-                        setImageDrawable(item.icon)
-                        setOnClickListener {
-                            menuCallback?.onMenuItemSelected(menuBuilder, item)
-                        }
-                    }
-                }
-            }
-        }.size
+        }.size, actionItems.size)
 
         val diff = actionItems.size - actionItemSize + if (hasOverflow) 1 else 0
 
@@ -214,18 +204,6 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         if (menuItems.isEmpty()) return
 
         (0 until childCount).map { getChildAt(it) }.forEachIndexed { i, view ->
-
-            if (i < actionItems.size) {
-                val item = actionItems[i]
-
-                (view as ImageView).apply {
-                    setImageDrawable(item.icon)
-                    setOnClickListener {
-                        menuCallback?.onMenuItemSelected(menuBuilder, item)
-                    }
-                }
-            }
-
             view.isClickable = true
 
             ViewCompat.animate(view)
