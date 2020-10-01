@@ -26,9 +26,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MenuInflater
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.DecelerateInterpolator
-import android.view.animation.LinearInterpolator
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.view.SupportMenuInflater
@@ -36,10 +34,8 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuItemImpl
 import androidx.appcompat.view.menu.SubMenuBuilder
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import xyz.quaver.floatingsearchview.R
 import xyz.quaver.floatingsearchview.util.MenuPopupHelper
-import xyz.quaver.floatingsearchview.util.dpToPx
 import kotlin.math.min
 
 private const val HIDE_IF_ROOM_ITEMS_ANIM_DURATION = 400L
@@ -62,8 +58,7 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
     // all menu items
     val menuItems = mutableListOf<MenuItemImpl>()
     // items that are currently presented as actions
-    private val actionItems = mutableListOf<MenuItemImpl>()
-    private val actionShowAlwaysItems = mutableListOf<MenuItemImpl>()
+    private val actionItems = mutableListOf<Pair<MenuItemImpl, ImageView>>()
 
     private var hasOverflow = false
 
@@ -89,7 +84,6 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
                 return
         }
 
-        actionShowAlwaysItems.clear()
         actionItems.clear()
         menuItems.clear()
         menuBuilder = MenuBuilder(context)
@@ -102,17 +96,42 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         menuItems += (menuBuilder.actionItems + menuBuilder.nonActionItems)
             .sortedBy { it.order }
 
-        val localActionItems = menuItems.filter {
+        val actionItemsSize = menuItems.count {
             it.icon != null && (it.requiresActionButton() || it.requestsActionButton())
         }
 
-        hasOverflow = localActionItems.size < menuItems.size ||
-                availWidth/actionDimension < localActionItems.size
+        hasOverflow = actionItemsSize < menuItems.size ||
+                availWidth/actionDimension < actionItemsSize
 
-        val availItemRoom = availWidth / actionDimension - if (hasOverflow) 1 else 0
+        var availItemRoom = availWidth / actionDimension - if (hasOverflow) 1 else 0
 
-        val actionItemsIds = mutableListOf<Int>()
-        localActionItems.filterNot { it.icon == null }.take(availItemRoom).forEach {
+        val localActionItems = MutableList<MenuItemImpl?>(min(actionItemsSize, availItemRoom)) { null }.apply {
+            while (availItemRoom > 0) {
+                this.add(menuItems.firstOrNull {
+                    it.icon != null && it.requiresActionButton() && !this.contains(it)
+                } ?: break)
+                availItemRoom--
+            }
+
+            while (availItemRoom > 0) {
+                val item = menuItems.firstOrNull {
+                    it.icon != null && it.requestsActionButton() && !this.contains(it)
+                } ?: break
+
+                val index = menuItems.indexOfFirst {
+                    it.requiresActionButton() && menuItems.indexOf(item) < menuItems.indexOf(it)
+                }
+
+                if (index < 0)
+                    this.add(item)
+                else
+                    this.add(index, item)
+
+                availItemRoom--
+            }
+        }.filterNotNull()
+
+        localActionItems.forEach {
             addView(createActionView().apply {
                 contentDescription = it.title
                 setImageDrawable(it.icon)
@@ -123,10 +142,11 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
                     }
                     menuCallback?.onMenuItemSelected(menuBuilder, it)
                 }
+
+                actionItems.add(Pair(it, this))
             })
 
-            actionItems.add(it)
-            actionItemsIds.add(it.itemId)
+            menuBuilder.removeItem(it.itemId)
         }
 
         if (hasOverflow) {
@@ -140,8 +160,6 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
             menuBuilder.setCallback(menuCallback)
         }
-
-        actionItemsIds.forEach { menuBuilder.removeItem(it) }
     }
 
     private fun createActionView(): ImageView =
@@ -155,72 +173,21 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
      *
      * @param withAnim
      */
-    fun hideIfRoomItems(withAnim: Boolean) {
+    fun hideIfRoomItems() {
         if (menu < 0) return
 
-        actionShowAlwaysItems.clear()
-
-        val actionItemSize = min(menuItems.filter {
-            it.icon != null && it.requiresActionButton()
-        }.size, actionItems.size)
-
-        val diff = actionItems.size - actionItemSize + if (hasOverflow) 1 else 0
-
-        cancelAnimation()
-
-        //add anims for moving showAlwaysItem views to the right
-        val destTransX = ((actionDimension*diff) - if (hasOverflow) dpToPx(8) else 0).toFloat()
-        (0 until actionItemSize).map { getChildAt(it) }.forEach {
-            ViewCompat.animate(it)
-                .setDuration(if (withAnim) HIDE_IF_ROOM_ITEMS_ANIM_DURATION else 0)
-                .apply { interpolator = AccelerateInterpolator() }
-                .translationX(destTransX)
-                .withEndAction {
-                    it.translationX = 0F
-                }
-        }
-
-        //add anims for moving to right and/or zooming out previously shown items
-        (actionItemSize until actionItemSize + diff).map { Pair(it, getChildAt(it)) }.forEach { (i, view) ->
-            view.isClickable = false
-
-            ViewCompat.animate(view)
-                .setDuration(if (withAnim) HIDE_IF_ROOM_ITEMS_ANIM_DURATION else 0)
-                .apply { if (i != childCount - 1) translationXBy(actionDimension.toFloat()) }
-                .scaleX(.5F)
-                .scaleY(.5F)
-                .alpha(0F)
-                .withEndAction {
-                    view.visibility = GONE
-                }
+        actionItems.filter { (menuItem, _ ) ->
+            menuItem.requestsActionButton()
+        }.forEach { (_, view) ->
+            view.visibility = View.GONE
         }
     }
 
-    fun showIfRoomItems(withAnim: Boolean) {
+    fun showIfRoomItems() {
         if (menu < 0) return
 
-        cancelAnimation()
-
-        if (menuItems.isEmpty()) return
-
-        (0 until childCount).map { getChildAt(it) }.forEachIndexed { i, view ->
-            view.isClickable = true
-
-            ViewCompat.animate(view)
-                .withStartAction {
-                    view.visibility = VISIBLE
-                }
-                .setDuration(if (withAnim) SHOW_IF_ROOM_ITEMS_ANIM_DURATION else 0)
-                .apply {
-                    interpolator =
-                        if (i > actionShowAlwaysItems.size - 1)
-                            LinearInterpolator()
-                        else
-                            DecelerateInterpolator()
-                }.translationX(0F)
-                .scaleX(1.0F)
-                .scaleY(1.0F)
-                .alpha(1.0F)
+        actionItems.forEach {
+            it.second.visibility = View.VISIBLE
         }
     }
 
@@ -228,16 +195,5 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         menuInflater ?: SupportMenuInflater(context).also {
             menuInflater = it
         }
-
-    private fun cancelAnimation() {
-        for (i in 0 until childCount)
-            getChildAt(i).clearAnimation()
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-
-        cancelAnimation()
-    }
 
 }

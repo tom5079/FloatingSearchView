@@ -111,6 +111,7 @@
             android:layout_marginEnd="@dimen/search_bar_right_icon_right_margin"
             android:layout_marginRight="@dimen/search_bar_right_icon_right_margin"
             android:orientation="horizontal"
+            android:animateLayoutChanges="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>

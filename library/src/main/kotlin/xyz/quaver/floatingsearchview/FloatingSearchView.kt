@@ -153,7 +153,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                 moveSuggestionListToInitialPos()
                 search_suggestions_section.visibility = View.VISIBLE
                 if (dimBackground) animateBackground(BackgroundAnimation.FADE_IN)
-                menu_view.hideIfRoomItems(true)
+                menu_view.hideIfRoomItems()
                 transitionInLeftSection(true)
                 context.showSoftKeyboard(search_bar_text)
                 if (menuOpen)
@@ -178,7 +178,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                 search_bar.requestFocus()
                 clearSuggestions()
                 if (dimBackground) animateBackground(BackgroundAnimation.FADE_OUT)
-                menu_view.showIfRoomItems(true)
+                menu_view.showIfRoomItems()
                 transitionOutLeftSection(true)
                 clear_btn.visibility = View.GONE
                 context.hostActivity?.closeSoftKeyboard()
@@ -728,7 +728,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
         this.menuId = menuId
         menu_view.reset(menuId, actionMenuAvailWidth())
 
-        if (isSearchFocused) menu_view.hideIfRoomItems(false)
+        if (isSearchFocused) menu_view.hideIfRoomItems()
     }
 
     fun setSearchBarTitle(title: CharSequence?) {
