@@ -181,6 +181,9 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         }.forEach { (_, view) ->
             view.visibility = View.GONE
         }
+
+        if (hasOverflow)
+            getChildAt(childCount-1).visibility = View.GONE
     }
 
     fun showIfRoomItems() {
@@ -189,6 +192,9 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         actionItems.forEach {
             it.second.visibility = View.VISIBLE
         }
+
+        if (hasOverflow)
+            getChildAt(childCount-1).visibility = View.VISIBLE
     }
 
     private fun getMenuInflater(): MenuInflater =
