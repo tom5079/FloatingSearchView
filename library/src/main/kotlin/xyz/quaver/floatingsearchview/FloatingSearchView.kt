@@ -47,9 +47,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.floating_search_layout.view.*
-import kotlinx.android.synthetic.main.search_query_section.view.*
-import kotlinx.android.synthetic.main.search_suggestions_section.view.*
+import xyz.quaver.floatingsearchview.databinding.FloatingSearchLayoutBinding
 import xyz.quaver.floatingsearchview.suggestions.OnBindSuggestionCallback
 import xyz.quaver.floatingsearchview.suggestions.SearchSuggestionsAdapter
 import xyz.quaver.floatingsearchview.suggestions.model.SearchSuggestion
@@ -115,10 +113,11 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     //endregion
 
     // region attributes
+    val binding = FloatingSearchLayoutBinding.inflate(LayoutInflater.from(context), this, true)
     private val backgroundDrawable: Drawable = ColorDrawable(Color.BLACK)
 
     val currentMenuItems: List<MenuItemImpl>
-        get() = menu_view.menuItems.toList()
+        get() = binding.querySection.menuView.menuItems.toList()
 
     var dimBackground = false
         set(value) {
@@ -128,11 +127,12 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
 
     var dismissFocusOnItemSelection: Boolean = Defaults.dismissFocusOnItemSelection
     var closeSearchOnKeyboardDismiss = Defaults.closeSearchOnKeyboardDismiss
+    @SuppressLint("ClickableViewAccessibility")
     var dismissOnOutsideClick = Defaults.dismissOnOutsideClick
         set(value) {
             field = value
 
-            search_suggestions_section.setOnTouchListener { v, event ->
+            binding.suggestionSection.searchSuggestionsSection.setOnTouchListener { v, event ->
                 if (event.action == MotionEvent.ACTION_UP)
                     v.performClick()
 
@@ -149,17 +149,17 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
             field = value
 
             if (value) {
-                search_bar_text.requestFocus()
+                binding.querySection.searchBarText.requestFocus()
                 moveSuggestionListToInitialPos()
-                search_suggestions_section.visibility = View.VISIBLE
+                binding.suggestionSection.root.visibility = View.VISIBLE
                 if (dimBackground) animateBackground(BackgroundAnimation.FADE_IN)
-                menu_view.hideIfRoomItems()
+                binding.querySection.menuView.hideIfRoomItems()
                 transitionInLeftSection(true)
-                context.showSoftKeyboard(search_bar_text)
+                context.showSoftKeyboard(binding.querySection.searchBarText)
                 if (menuOpen)
                     closeMenu(false)
 
-                with(search_bar_text) {
+                with(binding.querySection.searchBarText) {
                     if (isTitleSet) {
                         skipTextChangeEvent = true
                         setText("")
@@ -167,7 +167,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                         setSelection(text?.length ?: 0)
                     isLongClickable = true
 
-                    this@FloatingSearchView.clear_btn.visibility = if (this.text?.isEmpty() == true)
+                    binding.querySection.clearBtn.visibility = if (this.text?.isEmpty() == true)
                         View.INVISIBLE
                     else
                         View.VISIBLE
@@ -175,15 +175,15 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
 
                 onFocusChangeListener?.onFocus()
             } else {
-                search_bar.requestFocus()
+                binding.searchBar.requestFocus()
                 clearSuggestions()
                 if (dimBackground) animateBackground(BackgroundAnimation.FADE_OUT)
-                menu_view.showIfRoomItems()
+                binding.querySection.menuView.showIfRoomItems()
                 transitionOutLeftSection(true)
-                clear_btn.visibility = View.GONE
+                binding.querySection.clearBtn.visibility = View.GONE
                 context.hostActivity?.closeSoftKeyboard()
 
-                with(search_bar_text) {
+                with(binding.querySection.searchBarText) {
                     if (isTitleSet) {
                         skipTextChangeEvent = true
                         setText(titleText)
@@ -193,13 +193,13 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                 onFocusChangeListener?.onFocusCleared()
             }
 
-            search_suggestions_section.isEnabled = value
+            binding.suggestionSection.root.isEnabled = value
         }
 
     var queryTextSize: Int = Defaults.queryTextSize
         set(value) {
             field = value
-            search_bar_text.textSize = value.toFloat()
+            binding.querySection.searchBarText.textSize = value.toFloat()
         }
 
     private var titleText: CharSequence? = null
@@ -222,13 +222,13 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     var searchHint: CharSequence = resources.getText(Defaults.searchHint)
         set(value) {
             field = value
-            search_bar_text.hint = value
+            binding.querySection.searchBarText.hint = value
         }
     var showSearchKey: Boolean = Defaults.showSearchKey
         set(value) {
             field = value
 
-            search_bar_text.imeOptions =
+            binding.querySection.searchBarText.imeOptions =
                 if (value)
                     EditorInfo.IME_ACTION_SEARCH
                 else
@@ -258,9 +258,9 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     private var suggestionAnimDuration: Long = 0
 
     var queryText: CharSequence?
-        get() = search_bar_text.text.toString()
+        get() = binding.querySection.searchBarText.text.toString()
         set(value) {
-            with(search_bar_text) {
+            with(binding.querySection.searchBarText) {
                 setText(value)
                 setSelection(this.text?.length ?: 0)
             }
@@ -280,8 +280,6 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
 
     //region init
     init {
-        inflate(context, R.layout.floating_search_layout, this)
-
         attrs?.let { applyAttributes(
             context.obtainStyledAttributes(
                 it,
@@ -301,15 +299,15 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
         if (!isInEditMode)
             context.hostActivity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
 
-        search_query_section.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
+        binding.querySection.root.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
-                search_query_section.removeGlobalLayoutObserver(this)
+                binding.querySection.root.removeGlobalLayoutObserver(this)
 
                 inflateOverflowMenu(menuId)
             }
         })
 
-        with(menu_view) {
+        with(binding.querySection.menuView) {
             menuCallback = object: MenuBuilder.Callback {
                 override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem): Boolean {
                     onMenuItemClickListener?.invoke(item)
@@ -321,32 +319,30 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
             }
         }
 
-        with(clear_btn) {
+        with(binding.querySection.clearBtn) {
             visibility = View.INVISIBLE
             setImageDrawable(iconClear)
             setOnClickListener {
-                this@FloatingSearchView.search_bar_text.setText("")
+                this@FloatingSearchView.binding.querySection.searchBarText.setText("")
                 onClearSearchActionListener?.invoke()
             }
         }
 
-        with(search_bar_text) {
+        with(binding.querySection.searchBarText) {
             addTextChangedListener(onTextChanged = { s, start, before, count ->
-                val clear_btn = this@FloatingSearchView.clear_btn
-
                 if (skipTextChangeEvent || !isSearchFocused)
                     skipTextChangeEvent = false
                 else {
-                    if (this.text?.isNotEmpty() == true && clear_btn.visibility == View.INVISIBLE)
-                        ViewCompat.animate(clear_btn)
+                    if (this.text?.isNotEmpty() == true && binding.querySection.clearBtn.visibility == View.INVISIBLE)
+                        ViewCompat.animate(binding.querySection.clearBtn)
                             .setDuration(CLEAR_BTN_FADE_ANIM_DURATION)
                             .withStartAction {
-                                clear_btn.alpha = 0F
-                                clear_btn.visibility = View.VISIBLE
+                                binding.querySection.clearBtn.alpha = 0F
+                                binding.querySection.clearBtn.visibility = View.VISIBLE
                             }
                             .alpha(1F)
                     else if (this.text?.isEmpty() == true)
-                        clear_btn.visibility = View.INVISIBLE
+                        binding.querySection.clearBtn.visibility = View.INVISIBLE
 
                     val newQuery = this.text.toString()
 
@@ -382,14 +378,14 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
             }
         }
 
-        left_action.setOnClickListener {
+        binding.querySection.leftAction.setOnClickListener {
             if (isSearchFocused)
                 isSearchFocused = false
             else
                 when (leftActionMode) {
                     LeftActionMode.HAMBURGER ->
                         if (onLeftMenuClickListener != null)
-                            onLeftMenuClickListener?.onClick(left_action)
+                            onLeftMenuClickListener?.onClick(binding.querySection.leftAction)
                         else
                             toggleLeftMenu()
                     LeftActionMode.SEARCH -> isSearchFocused = true
@@ -402,7 +398,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     }
 
     private fun setupSuggestionSection() {
-        with(suggestions_list) {
+        with(binding.suggestionSection.suggestionsList) {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
             itemAnimator = null
 
@@ -453,7 +449,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                 adapter = suggestionsAdapter
             }
 
-            suggestions_list.adapter = suggestionsAdapter
+            binding.suggestionSection.suggestionsList.adapter = suggestionsAdapter
         }
     }
 
@@ -462,12 +458,12 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
             R.styleable.FloatingSearchView_arrelevation,
             dpToPx(4)
         ).also { elevation ->
-            search_query_section.cardElevation = elevation.toFloat()
-            suggestions_list_container.cardElevation = elevation.toFloat()
-            search_query_section.maxCardElevation = elevation.toFloat()
-            suggestions_list_container.maxCardElevation = elevation.toFloat()
+            binding.querySection.root.cardElevation = elevation.toFloat()
+            binding.suggestionSection.suggestionsListContainer.cardElevation = elevation.toFloat()
+            binding.querySection.root.maxCardElevation = elevation.toFloat()
+            binding.suggestionSection.suggestionsListContainer.maxCardElevation = elevation.toFloat()
 
-            search_query_section_parent.updateLayoutParams<LinearLayout.LayoutParams> {
+            binding.searchQuerySectionParent.updateLayoutParams<LinearLayout.LayoutParams> {
                 setMargins(0, 0, 0, -3*elevation/2)
             }
         }
@@ -477,14 +473,14 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
             R.styleable.FloatingSearchView_searchBarMarginLeft,
             R.styleable.FloatingSearchView_searchBarMarginRight
         ).map { attrs.getDimensionPixelSize(it, Defaults.searchBarMargin) }.let { (left, top, right) ->
-            search_query_section.updateLayoutParams<LayoutParams> {
+            binding.querySection.root.updateLayoutParams<LayoutParams> {
                 setMargins(left, top, right, 0)
             }
-            search_suggestions_section.updateLayoutParams<LinearLayout.LayoutParams> {
+            binding.suggestionSection.root.updateLayoutParams<LinearLayout.LayoutParams> {
                 setMargins(left, 0, right, 0)
             }
-            divider.updateLayoutParams<LayoutParams> {
-                val cornerRadius = search_query_section.radius.toInt()
+            binding.divider.updateLayoutParams<LayoutParams> {
+                val cornerRadius = binding.querySection.root.radius.toInt()
                 setMargins(left+elevation+cornerRadius, 0, right+elevation+cornerRadius, 3*elevation/2)
             }
         }
@@ -543,18 +539,18 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
         super.onLayout(changed, left, top, right, bottom)
         
         if (isInitialLayout) {
-            val addedHeight = (3*(elevation+search_query_section.radius)).toInt()
-            val finalHeight = search_suggestions_section.height + addedHeight
+            val addedHeight = (3*(elevation+binding.querySection.root.radius)).toInt()
+            val finalHeight = binding.suggestionSection.root.height + addedHeight
             
-            with(search_suggestions_section) {
+            with(binding.suggestionSection.root) {
                 layoutParams.height = finalHeight
                 requestLayout()
             }
             
-            suggestions_list_container.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
+            binding.suggestionSection.suggestionsListContainer.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
-                    if (search_suggestions_section.height == finalHeight) {
-                        suggestions_list_container.removeGlobalLayoutObserver(this)
+                    if (binding.suggestionSection.root.height == finalHeight) {
+                        binding.suggestionSection.suggestionsListContainer.removeGlobalLayoutObserver(this)
 
                         isSuggestionsSectionHeightSet = true
                         moveSuggestionListToInitialPos()
@@ -577,7 +573,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
 
         //remove any ongoing animations to prevent leaks
         //todo investigate if correct
-        suggestions_list_container.animate().cancel()
+        binding.suggestionSection.suggestionsListContainer.animate().cancel()
     }
 
     class SavedState : BaseSavedState {
@@ -702,7 +698,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
             skipTextChangeEvent = true
             skipQueryFocusChangeEvent = true
 
-            search_suggestions_section.visibility = View.VISIBLE
+            binding.suggestionSection.root.visibility = View.VISIBLE
 
             suggestionSecHeightListener = {
                 swapSuggestions(state.suggestions, false)
@@ -712,13 +708,13 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                 transitionInLeftSection(false)
             }
 
-            clear_btn.visibility = if (state.query.isNullOrEmpty())
+            binding.querySection.clearBtn.visibility = if (state.query.isNullOrEmpty())
                 View.INVISIBLE
             else
                 View.VISIBLE
-            left_action.visibility = View.VISIBLE
+            binding.querySection.leftAction.visibility = View.VISIBLE
 
-            context.showSoftKeyboard(search_bar_text)
+            context.showSoftKeyboard(binding.querySection.searchBarText)
         }
     }
     //endregion
@@ -726,15 +722,15 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     //region public methods
     fun inflateOverflowMenu(menuId: Int) {
         this.menuId = menuId
-        menu_view.reset(menuId, actionMenuAvailWidth())
+        binding.querySection.menuView.reset(menuId, actionMenuAvailWidth())
 
-        if (isSearchFocused) menu_view.hideIfRoomItems()
+        if (isSearchFocused) binding.querySection.menuView.hideIfRoomItems()
     }
 
     fun setSearchBarTitle(title: CharSequence?) {
         titleText = title.toString()
         isTitleSet = true
-        search_bar_text.setText(title)
+        binding.querySection.searchBarText.setText(title)
     }
 
     fun setSearchText(text: CharSequence?) {
@@ -788,11 +784,11 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     }
 
     fun showProgress() {
-        left_action.visibility = View.GONE
+        binding.querySection.leftAction.visibility = View.GONE
 
-        ViewCompat.animate(search_bar_search_progress)
+        ViewCompat.animate(binding.querySection.searchBarSearchProgress)
             .withStartAction {
-                with(search_bar_search_progress) {
+                with(binding.querySection.searchBarSearchProgress) {
                     alpha = 0F
                     visibility = View.VISIBLE
                 }
@@ -801,11 +797,11 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     }
 
     fun hideProgress() {
-        search_bar_search_progress.visibility = View.GONE
+        binding.querySection.searchBarSearchProgress.visibility = View.GONE
 
-        ViewCompat.animate(left_action)
+        ViewCompat.animate(binding.querySection.leftAction)
             .withStartAction {
-                with(left_action) {
+                with(binding.querySection.leftAction) {
                     alpha = 0F
                     visibility = View.VISIBLE
                 }
@@ -813,7 +809,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
             .start()
     }
 
-    fun clearQuery() { search_bar_text.setText("") }
+    fun clearQuery() { binding.querySection.searchBarText.setText("") }
 
     fun setSearchFocused(focused: Boolean): Boolean =
         (!focused && this.isSearchFocused).also {
@@ -853,9 +849,9 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     //region private methods
     private fun actionMenuAvailWidth(): Int {
         return if (isInEditMode)
-            search_query_section.measuredWidth / 2
+            binding.querySection.root.measuredWidth / 2
         else
-            search_query_section.width / 2
+            binding.querySection.root.width / 2
     }
 
     private fun toggleLeftMenu() {
@@ -868,7 +864,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     private fun refreshLeftIcon() {
         val leftActionWidthAndMarginLeft = dpToPx(LEFT_MENU_WIDTH_AND_MARGIN_START_DP)
 
-        with(left_action) {
+        with(binding.querySection.leftAction) {
             visibility = View.VISIBLE
 
             when (leftActionMode) {
@@ -883,7 +879,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
             }
         }
 
-        search_input_parent.translationX = (
+        binding.querySection.searchInputParent.translationX = (
             if (leftActionMode == LeftActionMode.NO_ACTION)
                 -leftActionWidthAndMarginLeft
             else
@@ -900,7 +896,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     }
 
     private fun moveSuggestionListToInitialPos() {
-        suggestions_list_container.translationY = -suggestions_list_container.height.toFloat()
+        binding.suggestionSection.suggestionsListContainer.translationY = -binding.suggestionSection.suggestionsListContainer.height.toFloat()
     }
 
     private enum class BackgroundAnimation {
@@ -935,8 +931,8 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     private fun calculateSuggestionItemsHeight(suggestions: List<SearchSuggestion?>, max: Int): Int {
         var visibleItemsHeight = 0
 
-        return min((0 until min(suggestions.size, suggestions_list.childCount)).map {
-            (visibleItemsHeight + suggestions_list.getChildAt(it).height).also { acc ->
+        return min((0 until min(suggestions.size, binding.suggestionSection.suggestionsList.childCount)).map {
+            (visibleItemsHeight + binding.suggestionSection.suggestionsList.getChildAt(it).height).also { acc ->
                 visibleItemsHeight = acc
             }
         }.maxOrNull() ?: 0, max)
@@ -947,26 +943,26 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
         newSearchSuggestions: List<SearchSuggestion>,
         withAnim: Boolean
     ): Boolean {
-        val cardTopBottomShadowPadding: Int = search_query_section.radius.toInt()
-        val cardRadiusSize: Int = search_query_section.radius.toInt()
+        val cardTopBottomShadowPadding: Int = binding.querySection.root.radius.toInt()
+        val cardRadiusSize: Int = binding.querySection.root.radius.toInt()
 
         val visibleSuggestionHeight: Int = calculateSuggestionItemsHeight(
             newSearchSuggestions,
-            suggestions_list_container.height
+            binding.suggestionSection.suggestionsListContainer.height
         )
-        val diff: Int = suggestions_list_container.height - visibleSuggestionHeight
+        val diff: Int = binding.suggestionSection.suggestionsListContainer.height - visibleSuggestionHeight
         val addedTranslationYForShadowOffsets =
-            if (diff <= cardTopBottomShadowPadding) -(cardTopBottomShadowPadding - diff) else if (diff < suggestions_list_container.height - cardTopBottomShadowPadding) cardRadiusSize else 0
-        val newTranslationY: Float = (-suggestions_list_container.height +
+            if (diff <= cardTopBottomShadowPadding) -(cardTopBottomShadowPadding - diff) else if (diff < binding.suggestionSection.suggestionsListContainer.height - cardTopBottomShadowPadding) cardRadiusSize else 0
+        val newTranslationY: Float = (-binding.suggestionSection.suggestionsListContainer.height +
                 visibleSuggestionHeight + addedTranslationYForShadowOffsets).toFloat()
 
         //todo go over
         val fullyInvisibleTranslationY: Float =
-            -suggestions_list_container.height + cardRadiusSize.toFloat()
+            -binding.suggestionSection.suggestionsListContainer.height + cardRadiusSize.toFloat()
 
-        suggestions_list_container.animate().cancel()
+        binding.suggestionSection.suggestionsListContainer.animate().cancel()
         if (withAnim) {
-            ViewCompat.animate(suggestions_list_container)
+            ViewCompat.animate(binding.suggestionSection.suggestionsListContainer)
                 .setInterpolator(SUGGEST_ITEM_ADD_ANIM_INTERPOLATOR)
                 .setDuration(suggestionAnimDuration)
                 .translationY(newTranslationY)
@@ -975,33 +971,33 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                 }
                 .setListener(object : ViewPropertyAnimatorListenerAdapter() {
                     override fun onAnimationCancel(view: View?) {
-                        suggestions_list_container.translationY = newTranslationY
+                        binding.suggestionSection.suggestionsListContainer.translationY = newTranslationY
                     }
                 }).start()
         } else {
-            suggestions_list_container.translationY = newTranslationY
-            onSuggestionsListHeightChanged?.invoke(abs(suggestions_list_container.translationY - fullyInvisibleTranslationY))
+            binding.suggestionSection.suggestionsListContainer.translationY = newTranslationY
+            onSuggestionsListHeightChanged?.invoke(abs(binding.suggestionSection.suggestionsListContainer.translationY - fullyInvisibleTranslationY))
         }
 
-        return suggestions_list_container.height == visibleSuggestionHeight
+        return binding.suggestionSection.suggestionsListContainer.height == visibleSuggestionHeight
     }
 
     private fun swapSuggestions(newSearchSuggestions: List<SearchSuggestion?>, withAnim: Boolean) {
 
         val suggestions = newSearchSuggestions.filterNotNull()
 
-        with(suggestions_list) {
+        with(binding.suggestionSection.suggestionsList) {
             viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
-                    suggestions_list.removeGlobalLayoutObserver(this)
+                    binding.suggestionSection.suggestionsList.removeGlobalLayoutObserver(this)
                     val isSuggestionItemsFillRecyclerView = updateSuggestionSectionHeight(suggestions, withAnim)
 
-                    (suggestions_list.layoutManager as LinearLayoutManager).let {
+                    (binding.suggestionSection.suggestionsList.layoutManager as LinearLayoutManager).let {
                         it.reverseLayout = !isSuggestionItemsFillRecyclerView
                         if (!isSuggestionItemsFillRecyclerView)
                             suggestionsAdapter?.reverseList()
                     }
-                    suggestions_list.alpha = 1F
+                    binding.suggestionSection.suggestionsList.alpha = 1F
                 }
             })
             alpha = 0F
@@ -1010,7 +1006,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
             }
         }
 
-        divider.visibility = if (newSearchSuggestions.isNotEmpty()) View.VISIBLE else View.GONE
+        binding.divider.visibility = if (newSearchSuggestions.isNotEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun openMenuDrawable(drawerArrowDrawable: DrawerArrowDrawable, withAnim: Boolean) {
@@ -1053,7 +1049,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     }
 
     private fun transitionInLeftSection(withAnim: Boolean) {
-        left_action.visibility = if (search_bar_search_progress.visibility != View.VISIBLE)
+        binding.querySection.leftAction.visibility = if (binding.querySection.searchBarSearchProgress.visibility != View.VISIBLE)
             View.VISIBLE
         else
             View.INVISIBLE
@@ -1063,12 +1059,12 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                 openMenuDrawable(menuBtnDrawable, withAnim)
             }
             LeftActionMode.SEARCH -> {
-                left_action.setImageDrawable(iconBackArrow)
+                binding.querySection.leftAction.setImageDrawable(iconBackArrow)
                 if (withAnim) {
-                    ViewCompat.animate(left_action)
+                    ViewCompat.animate(binding.querySection.leftAction)
                         .withStartAction {
-                            left_action.rotation = 45F
-                            left_action.alpha = 0F
+                            binding.querySection.leftAction.rotation = 45F
+                            binding.querySection.leftAction.alpha = 0F
                         }
                         .setDuration(500)
                         .rotation(0F)
@@ -1076,14 +1072,14 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                 }
             }
             LeftActionMode.NO_ACTION -> {
-                left_action.setImageDrawable(iconBackArrow)
+                binding.querySection.leftAction.setImageDrawable(iconBackArrow)
 
                 if (withAnim) {
-                    search_input_parent.animate()
+                    binding.querySection.searchInputParent.animate()
                         .setDuration(500)
                         .translationX(0F)
 
-                    left_action.apply {
+                    binding.querySection.leftAction.apply {
                         scaleX = .5F
                         scaleY = .5F
                         alpha = 0F
@@ -1098,7 +1094,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                             .alpha(1F)
                     }
                 } else
-                    search_input_parent.translationX = 0F
+                    binding.querySection.searchInputParent.translationX = 0F
             }
             else -> {
                 //do nothing
@@ -1109,19 +1105,19 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     private fun transitionOutLeftSection(withAnim: Boolean) {
         when (leftActionMode) {
             LeftActionMode.HAMBURGER -> closeMenuDrawable(menuBtnDrawable, withAnim)
-            LeftActionMode.SEARCH -> changeIcon(left_action, iconSearch, withAnim)
+            LeftActionMode.SEARCH -> changeIcon(binding.querySection.leftAction, iconSearch, withAnim)
             LeftActionMode.NO_ACTION -> {
-                left_action.setImageDrawable(iconBackArrow)
+                binding.querySection.leftAction.setImageDrawable(iconBackArrow)
 
                 if (withAnim) {
-                    search_input_parent.animate()
+                    binding.querySection.searchInputParent.animate()
                         .setDuration(350)
                         .translationX(-dpToPx(LEFT_MENU_WIDTH_AND_MARGIN_START_DP).toFloat())
 
-                    ViewCompat.animate(left_action)
+                    ViewCompat.animate(binding.querySection.leftAction)
                         .setDuration(300)
                         .withStartAction {
-                            with(left_action) {
+                            with(binding.querySection.leftAction) {
                                 scaleX = .5F
                                 scaleY = .5F
                                 alpha = 0F
@@ -1133,7 +1129,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
                         .scaleY(1F)
                         .alpha(1F)
                 } else
-                    left_action.visibility = View.INVISIBLE
+                    binding.querySection.leftAction.visibility = View.INVISIBLE
             }
             else -> {
                 //do nothing

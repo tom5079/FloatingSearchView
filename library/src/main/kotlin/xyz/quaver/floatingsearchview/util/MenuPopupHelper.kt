@@ -36,7 +36,6 @@ import xyz.quaver.floatingsearchview.R
 import kotlin.math.max
 import kotlin.math.min
 
-private const val TAG = "MenuPopupHelper"
 private val ITEM_LAYOUT = R.layout.abc_popup_menu_item_layout
 
 class MenuPopupHelper(

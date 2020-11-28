@@ -36,7 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <include layout="@layout/search_query_section" />
+            <include android:id="@+id/query_section" layout="@layout/search_query_section" />
         </FrameLayout>
 
         <FrameLayout
@@ -52,5 +52,5 @@
         </FrameLayout>
     </FrameLayout>
 
-    <include layout="@layout/search_suggestions_section" />
+    <include android:id="@+id/suggestion_section" layout="@layout/search_suggestions_section" />
 </LinearLayout>

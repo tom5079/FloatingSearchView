@@ -25,10 +25,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.search_suggestion_item.view.*
-import xyz.quaver.floatingsearchview.R
+import xyz.quaver.floatingsearchview.databinding.SearchSuggestionItemBinding
 import xyz.quaver.floatingsearchview.suggestions.model.SearchSuggestion
 
 typealias OnBindSuggestionCallback = (
@@ -42,34 +40,43 @@ class SearchSuggestionsAdapter(
     private val context: Context,
     private val suggestionTextSize: Int,
     private val listener: Listener? = null
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<SearchSuggestionsAdapter.SearchSuggestionViewHolder>() {
 
     interface Listener {
         fun onItemSelected(item: SearchSuggestion?)
         fun onMoveItemToSearchClicked(item: SearchSuggestion?)
     }
 
-    class SearchSuggestionViewHolder(val view: View, private val listener: Listener? = null) : RecyclerView.ViewHolder(view) {
-        interface Listener {
-            fun onItemClicked(adapterPosition: Int)
-            fun onMoveItemToSearchClicked(adapterPosition: Int)
-        }
+    inner class SearchSuggestionViewHolder(val binding: SearchSuggestionItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        var item: SearchSuggestion? = null
 
         init {
-            view.right_icon.setOnClickListener {
+            binding.rightIcon.setOnClickListener {
                 if (adapterPosition != RecyclerView.NO_POSITION)
-                    listener?.onMoveItemToSearchClicked(adapterPosition)
+                    listener?.onMoveItemToSearchClicked(item)
             }
 
             itemView.setOnClickListener {
                 if (adapterPosition != RecyclerView.NO_POSITION)
-                    listener?.onItemClicked(adapterPosition)
+                    listener?.onItemSelected(item)
             }
+        }
+
+        fun bind(item: SearchSuggestion, position: Int) {
+            this.item = item
+
+            with (binding.rightIcon) {
+                isEnabled = showRightMoveUpBtn
+                visibility = if (showRightMoveUpBtn) View.VISIBLE else View.INVISIBLE
+            }
+
+            binding.body.text = item.body
+
+            onBindSuggestionCallback?.invoke(binding.root, binding.leftIcon, binding.body, item, position)
         }
 
     }
 
-    private val rightIconDrawable = ContextCompat.getDrawable(context, R.drawable.arrow_left)
     var showRightMoveUpBtn = false
         set(value) {
             field.let {
@@ -91,33 +98,18 @@ class SearchSuggestionsAdapter(
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return LayoutInflater.from(parent.context).inflate(R.layout.search_suggestion_item, parent, false).let {
-            it.right_icon.setImageDrawable(rightIconDrawable)
-
-            SearchSuggestionViewHolder(it, object: SearchSuggestionViewHolder.Listener {
-                override fun onItemClicked(adapterPosition: Int) {
-                    listener?.onItemSelected(searchSuggestions[adapterPosition])
-                }
-
-                override fun onMoveItemToSearchClicked(adapterPosition: Int) {
-                    listener?.onMoveItemToSearchClicked(searchSuggestions[adapterPosition])
-                }
-            })
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchSuggestionsAdapter.SearchSuggestionViewHolder {
+        return SearchSuggestionViewHolder(
+            SearchSuggestionItemBinding.inflate(
+                LayoutInflater.from(
+                    parent.context
+                ), parent, false
+            )
+        )
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val view = (holder as SearchSuggestionViewHolder).view
-
-        with(view.right_icon) {
-            isEnabled = showRightMoveUpBtn
-            visibility = if (showRightMoveUpBtn) View.VISIBLE else View.INVISIBLE
-        }
-
-        view.body.text = searchSuggestions[position].body
-
-        onBindSuggestionCallback?.invoke(view, view.left_icon, view.body, searchSuggestions[position], position)
+    override fun onBindViewHolder(holder: SearchSuggestionsAdapter.SearchSuggestionViewHolder, position: Int) {
+        holder.bind(searchSuggestions[position], position)
     }
 
     override fun getItemCount(): Int = searchSuggestions.size
