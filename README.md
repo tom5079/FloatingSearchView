@@ -43,11 +43,11 @@ implementation 'xyz.quaver:floatingsearchview:1.0.8'
 
 ### Kotlin
 ```kotlin
-search_view.onQueryChangeListener = { oldQuery, newQuery -> {
+binding.searchView.onQueryChangeListener = { oldQuery, newQuery -> {
     //get suggestions based on newQuery
   
     //pass them on to the search view
-    search_view.swapSuggestions(newSuggestions);
+    binding.searchView.swapSuggestions(newSuggestions);
 }
 ```
 
@@ -99,12 +99,12 @@ Listen to *hamburger* button clicks:
 
 To quickly connect your **NavigationDrawer** to the *hamburger* button:
 ```kotlin
-menu_view.attachNavigationDrawerToMenuButton(mDrawerLayout);
+binding.menuView.attachNavigationDrawerToMenuButton(mDrawerLayout);
 ```
 
 Listen to home (back arrow) button clicks:
 ```kotlin
-menu_view.setOnHomeActionClickListener(
+binding.menuView.setOnHomeActionClickListener(
       new FloatingSearchView.OnHomeActionClickListener() { ... });       
 ```
 
@@ -116,7 +116,7 @@ menu_view.setOnHomeActionClickListener(
 
 Add a menu resource
 ```xml
-app:=menu="@menu/menu_main"
+app:menu="@menu/menu_main"
 ```
 
 In the menu resource, set items' ```app:showAsAction="[insert one of the options described in the table below]"```
@@ -141,7 +141,7 @@ In the menu resource, set items' ```app:showAsAction="[insert one of the options
 
 Listen for item selections 
 ```kotlin
-search_view.onMenuItemClickListener = { item ->
+binding.searchView.onMenuItemClickListener = { item ->
 
 }
 ```
