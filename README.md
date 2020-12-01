@@ -156,7 +156,8 @@ Set a callback for when a given suggestion is bound to the suggestion list.
 
 For the history icons to show, you would need to implement this. Refer to the sample app for an [example implementation](https://github.com/tom5079/FloatingSearchView/blob/master/app/src/main/java/xyz/quaver/floatingsearchview/sample/fragment/ScrollingSearchExampleFragment.java#L222).
 ``` 
-binding.searchView.onBindSuggestionCallback = { suggestionView, leftIcon, textView, item, itemPosition ->
+binding.searchView.onBindSuggestionCallback = { binding, item, itemPosition ->
+  // suggestionView = binding.root, leftIcon = binding.leftIcon, textView = binding.body
   //here you can set some attributes for the suggestion's left icon and text. For example,
   //you can choose your favorite image-loading library for setting the left icon's image.
 });
