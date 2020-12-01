@@ -86,6 +86,13 @@ class SearchSuggestionsAdapter(
     val searchSuggestions = mutableListOf<SearchSuggestion>()
     var onBindSuggestionCallback: OnBindSuggestionCallback? = null
 
+    var reverseList = true
+        set(value) {
+            field = value
+
+            notifyDataSetChanged()
+        }
+
     fun swapData(searchSuggestions: List<SearchSuggestion>) {
         this.searchSuggestions.clear()
         this.searchSuggestions.addAll(searchSuggestions)
@@ -104,13 +111,8 @@ class SearchSuggestionsAdapter(
     }
 
     override fun onBindViewHolder(holder: SearchSuggestionsAdapter.SearchSuggestionViewHolder, position: Int) {
-        holder.bind(searchSuggestions[position], position)
+        holder.bind(searchSuggestions[if (reverseList) searchSuggestions.size - position - 1 else position], position)
     }
 
     override fun getItemCount(): Int = searchSuggestions.size
-
-    fun reverseList() {
-        searchSuggestions.reverse()
-        notifyDataSetChanged()
-    }
 }

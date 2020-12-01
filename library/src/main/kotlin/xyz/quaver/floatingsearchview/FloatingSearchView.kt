@@ -983,7 +983,6 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     }
 
     private fun swapSuggestions(newSearchSuggestions: List<SearchSuggestion?>, withAnim: Boolean) {
-
         val suggestions = newSearchSuggestions.filterNotNull()
 
         with(binding.suggestionSection.suggestionsList) {
@@ -994,8 +993,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
 
                     (binding.suggestionSection.suggestionsList.layoutManager as LinearLayoutManager).let {
                         it.reverseLayout = !isSuggestionItemsFillRecyclerView
-                        if (!isSuggestionItemsFillRecyclerView)
-                            suggestionsAdapter?.reverseList()
+                        suggestionsAdapter?.reverseList = !isSuggestionItemsFillRecyclerView
                     }
                     binding.suggestionSection.suggestionsList.alpha = 1F
                 }
