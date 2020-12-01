@@ -23,16 +23,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import xyz.quaver.floatingsearchview.databinding.SearchSuggestionItemBinding
 import xyz.quaver.floatingsearchview.suggestions.model.SearchSuggestion
 
 typealias OnBindSuggestionCallback = (
-    suggestionView: View,
-    leftIcon: ImageView,
-    textView: TextView,
+    binding: SearchSuggestionItemBinding,
     item: SearchSuggestion,
     itemPosition: Int
 ) -> Unit
@@ -72,7 +68,7 @@ class SearchSuggestionsAdapter(
 
             binding.body.text = item.body
 
-            onBindSuggestionCallback?.invoke(binding.root, binding.leftIcon, binding.body, item, position)
+            onBindSuggestionCallback?.invoke(binding, item, position)
         }
 
     }
@@ -91,10 +87,9 @@ class SearchSuggestionsAdapter(
     var onBindSuggestionCallback: OnBindSuggestionCallback? = null
 
     fun swapData(searchSuggestions: List<SearchSuggestion>) {
-        with(this.searchSuggestions) {
-            clear()
-            addAll(searchSuggestions)
-        }
+        this.searchSuggestions.clear()
+        this.searchSuggestions.addAll(searchSuggestions)
+
         notifyDataSetChanged()
     }
 

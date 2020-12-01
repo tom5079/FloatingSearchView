@@ -219,15 +219,15 @@ public class SlidingSearchResultsExampleFragment extends BaseExampleFragment {
          * Keep in mind that the suggestion list is a RecyclerView, so views are reused for different
          * items in the list.
          */
-        mSearchView.setOnBindSuggestionCallback((suggestionView, leftIcon, textView, item, itemPosition) -> {
+        mSearchView.setOnBindSuggestionCallback((binding, item, itemPosition) -> {
             ColorSuggestion colorSuggestion = (ColorSuggestion) item;
 
             if (colorSuggestion.getIsHistory()) {
-                leftIcon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.history));
+                binding.leftIcon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.history));
 
                 /*TODO Util.setIconColor(leftIcon, Color.parseColor(textColor));*/
             } else {
-                leftIcon.setImageDrawable(null);
+                binding.leftIcon.setImageDrawable(null);
             }
 
             return Unit.INSTANCE;

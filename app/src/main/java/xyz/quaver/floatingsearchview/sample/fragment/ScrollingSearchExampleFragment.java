@@ -219,28 +219,28 @@ public class ScrollingSearchExampleFragment extends BaseExampleFragment implemen
          * Keep in mind that the suggestion list is a RecyclerView, so views are reused for different
          * items in the list.
          */
-        mSearchView.setOnBindSuggestionCallback((suggestionView, leftIcon, textView, item, itemPosition) -> {
+        mSearchView.setOnBindSuggestionCallback((binding, item, position) -> {
             ColorSuggestion colorSuggestion = (ColorSuggestion) item;
 
             String textColor = mIsDarkSearchTheme ? "#ffffff" : "#000000";
             String textLight = mIsDarkSearchTheme ? "#bfbfbf" : "#787878";
 
             if (colorSuggestion.getIsHistory()) {
-                leftIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(),
+                binding.leftIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(),
                         R.drawable.history, null));
 
                 /*TODO Util.setIconColor(leftIcon, Color.parseColor(textColor));*/
-                leftIcon.setAlpha(.36f);
+                binding.leftIcon.setAlpha(.36f);
             } else {
-                leftIcon.setAlpha(0.0f);
-                leftIcon.setImageDrawable(null);
+                binding.leftIcon.setAlpha(0.0f);
+                binding.leftIcon.setImageDrawable(null);
             }
 
-            textView.setTextColor(Color.parseColor(textColor));
+            binding.body.setTextColor(Color.parseColor(textColor));
             String text = colorSuggestion.getBody()
                     .replaceFirst(mSearchView.getQuery(),
                             "<font color=\"" + textLight + "\">" + mSearchView.getQuery() + "</font>");
-            textView.setText(Html.fromHtml(text));
+            binding.body.setText(Html.fromHtml(text));
 
             return Unit.INSTANCE;
         });
