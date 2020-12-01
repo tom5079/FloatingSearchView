@@ -16,7 +16,7 @@ Usage
 
 1. In your dependencies, add
 ```
-implementation 'xyz.quaver:floatingsearchview:1.0.7'
+implementation 'xyz.quaver:floatingsearchview:1.0.8'
 ```
 2. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
    up the full width and height of the screen
@@ -43,11 +43,11 @@ implementation 'xyz.quaver:floatingsearchview:1.0.7'
 
 ### Kotlin
 ```kotlin
-search_view.onQueryChangeListener = { oldQuery, newQuery -> {
+binding.searchView.onQueryChangeListener = { oldQuery, newQuery -> {
     //get suggestions based on newQuery
   
     //pass them on to the search view
-    search_view.swapSuggestions(newSuggestions);
+    binding.searchView.swapSuggestions(newSuggestions);
 }
 ```
 
@@ -92,19 +92,19 @@ app:leftActionMode="[insert one of the options from table below]"
 
 Listen to *hamburger* button clicks:
 ```kotlin
- search_view.onMenuClickListener = object: FloatingSearchView.OnLeftMenuClickListener {
+ binding.searchView.onMenuClickListener = object: FloatingSearchView.OnLeftMenuClickListener {
      ...
  }        
 ```
 
 To quickly connect your **NavigationDrawer** to the *hamburger* button:
 ```kotlin
-menu_view.attachNavigationDrawerToMenuButton(mDrawerLayout);
+binding.menuView.attachNavigationDrawerToMenuButton(mDrawerLayout);
 ```
 
 Listen to home (back arrow) button clicks:
 ```kotlin
-menu_view.setOnHomeActionClickListener(
+binding.menuView.setOnHomeActionClickListener(
       new FloatingSearchView.OnHomeActionClickListener() { ... });       
 ```
 
@@ -116,7 +116,7 @@ menu_view.setOnHomeActionClickListener(
 
 Add a menu resource
 ```xml
-app:=menu="@menu/menu_main"
+app:menu="@menu/menu_main"
 ```
 
 In the menu resource, set items' ```app:showAsAction="[insert one of the options described in the table below]"```
@@ -141,7 +141,7 @@ In the menu resource, set items' ```app:showAsAction="[insert one of the options
 
 Listen for item selections 
 ```kotlin
-search_view.onMenuItemClickListener = { item ->
+binding.searchView.onMenuItemClickListener = { item ->
 
 }
 ```
@@ -156,7 +156,7 @@ Set a callback for when a given suggestion is bound to the suggestion list.
 
 For the history icons to show, you would need to implement this. Refer to the sample app for an [example implementation](https://github.com/tom5079/FloatingSearchView/blob/master/app/src/main/java/xyz/quaver/floatingsearchview/sample/fragment/ScrollingSearchExampleFragment.java#L222).
 ``` 
-search_view.onBindSuggestionCallback = { suggestionView, leftIcon, textView, item, itemPosition ->
+binding.searchView.onBindSuggestionCallback = { suggestionView, leftIcon, textView, item, itemPosition ->
   //here you can set some attributes for the suggestion's left icon and text. For example,
   //you can choose your favorite image-loading library for setting the left icon's image.
 });
