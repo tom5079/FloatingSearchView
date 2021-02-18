@@ -63,10 +63,7 @@ class MenuPopupHelper(
         private val items: ArrayList<MenuItemImpl>
             get() = (if (overflowOnly) menu.nonActionItems else menu.visibleItems)
 
-        override fun getCount(): Int = when {
-            expendedIndex < 0 -> items.size
-            else -> items.size - 1
-        }
+        override fun getCount(): Int = items.size - if (expendedIndex < 0) 0 else 1
 
         override fun getItem(position: Int): MenuItemImpl =
             items[if (expendedIndex in 0..position) position + 1 else position]
@@ -78,6 +75,7 @@ class MenuPopupHelper(
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View =
             ((convertView ?: inflater.inflate(ITEM_LAYOUT, parent, false)) as ListMenuItemView).also {
                 it.initialize(getItem(position), 0)
+                it.setGroupDividerEnabled(false)
                 if (forceShowIcon) it.setForceShowIcon(true)
             }
 
