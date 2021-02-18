@@ -16,5 +16,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
+rootProject.buildFileName = "build.gradle.kts"
 
-include ':library', ':app'
+include(":app", ":library")
