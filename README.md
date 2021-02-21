@@ -16,7 +16,7 @@ Usage
 
 1. In your dependencies, add
 ```
-implementation 'xyz.quaver:floatingsearchview:1.1.2'
+implementation 'xyz.quaver:floatingsearchview:1.1.4'
 ```
 2. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
    up the full width and height of the screen
