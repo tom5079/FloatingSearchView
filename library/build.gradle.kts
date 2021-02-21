@@ -26,7 +26,7 @@ plugins {
 }
 
 group = "xyz.quaver"
-version = "1.1.2"
+version = "1.1.3"
 
 android {
     compileSdkVersion(30)
@@ -37,6 +37,10 @@ android {
         targetSdkVersion(30)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    sourceSets.all {
+        java.srcDirs("$buildDir/src/$name/kotlin")
     }
 
     buildTypes {
