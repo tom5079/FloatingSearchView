@@ -24,12 +24,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 31
 
     defaultConfig {
         applicationId = "xyz.quaver.floatingsearchview.sample"
-        minSdkVersion(14)
-        targetSdkVersion(30)
+        minSdk = 14
+        targetSdk = 31
         versionCode = 1
         versionName = "0.1-SAMPLE"
 
@@ -54,15 +54,15 @@ android {
 dependencies {
     implementation(project(":library"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("androidx.core:core-ktx:1.3.2")
-    implementation("androidx.appcompat:appcompat:1.2.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.3.3")
-    implementation("androidx.navigation:navigation-ui-ktx:2.3.3")
-    implementation("com.google.android.material:material:1.3.0")
-    implementation("com.google.code.gson:gson:2.8.6")
-    testImplementation("junit:junit:4.13.1")
-    androidTestImplementation("androidx.test.ext:junit:1.1.2")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
+    implementation("androidx.core:core-ktx:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.3")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.4.1")
+    implementation("androidx.navigation:navigation-ui-ktx:2.4.1")
+    implementation("com.google.android.material:material:1.5.0")
+    implementation("com.google.code.gson:gson:2.9.0")
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 
 }

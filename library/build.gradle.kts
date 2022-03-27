@@ -29,12 +29,11 @@ group = "xyz.quaver"
 version = "1.1.4"
 
 android {
-    compileSdkVersion(30)
-    buildToolsVersion("29.0.3")
+    compileSdk = 31
 
     defaultConfig {
-        minSdkVersion(14)
-        targetSdkVersion(30)
+        minSdk = 14
+        targetSdk = 31
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -62,24 +61,25 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-
     packagingOptions {
-        exclude("META-INF/*.kotlin_module")
+        resources {
+            excludes += setOf("META-INF/*.kotlin_module")
+        }
     }
 }
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
-    implementation("androidx.core:core-ktx:1.3.2")
-    implementation("androidx.appcompat:appcompat:1.2.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("androidx.core:core-ktx:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.4.1")
     implementation("androidx.cardview:cardview:1.0.0")
-    implementation("androidx.recyclerview:recyclerview:1.1.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
-    implementation("com.google.android.material:material:1.3.0")
-    testImplementation("junit:junit:4.13.1")
-    androidTestImplementation("androidx.test.ext:junit:1.1.2")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.3")
+    implementation("com.google.android.material:material:1.5.0")
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 }
 
 val ossrhUsername: String by project
