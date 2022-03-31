@@ -186,8 +186,8 @@ Available styling:
    </style>
 ```
 
-`backgroundColor` uses `colorOnSurface` value defined in Theme.  
-To change `backgroundColor` according to Light/Dark Theme, define `colorOnSurface` or use `Theme.Material`/`Theme.MaterialComponents` as a parent.  
+`backgroundColor` uses `colorSurface` value defined in Theme.  
+To change `backgroundColor` according to Light/Dark Theme, define `colorSurface` or use `Theme.Material`/`Theme.MaterialComponents` as a parent.  
 Otherwise, `backgroundColor` defaults to White.
 
 License
