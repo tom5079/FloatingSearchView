@@ -26,7 +26,7 @@ plugins {
 }
 
 group = "xyz.quaver"
-version = "1.2.0-rc1"
+version = "1.2.0-rc2"
 
 android {
     compileSdk = 31

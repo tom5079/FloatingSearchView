@@ -611,7 +611,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
 
         setBackgroundColor(attrs.getColor(
             R.styleable.FloatingSearchView_backgroundColor,
-            MaterialColors.getColor(this, R.attr.colorSurface)
+            MaterialColors.getColor(this, R.attr.colorSurface, Color.WHITE)
         ))
 
         leftActionIconColor = attrs.getColor(
