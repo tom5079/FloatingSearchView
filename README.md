@@ -16,7 +16,7 @@ Usage
 
 1. In your dependencies, add
 ```
-implementation 'xyz.quaver:floatingsearchview:1.2.0-rc1'
+implementation 'xyz.quaver:floatingsearchview:1.2.0-rc2'
 ```
 2. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
    up the full width and height of the screen
@@ -163,8 +163,32 @@ binding.searchView.onBindSuggestionCallback = { binding, item, itemPosition ->
 });
 ``` 
 
-**Styling:**  
-Styling is currently not supported.
+
+**Styling:**
+
+<img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/style_light.png" width="350"/>
+<img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/style_dark.png" width="350"/>
+
+Available styling:
+
+```xml
+   <style name="SearchView">
+           <item name="backgroundColor"></item>
+           <item name="viewSearchInputTextColor"></item>
+           <item name="viewSuggestionItemTextColor"></item>
+           <item name="hintTextColor"></item>
+           <item name="dividerColor"></item>
+           <item name="clearBtnColor"></item>
+           <item name="leftActionColor"></item>
+           <item name="menuItemIconColor"></item>
+           <item name="suggestionRightIconColor"></item>
+           <item name="actionMenuOverflowColor"></item>
+   </style>
+```
+
+`backgroundColor` uses `colorOnSurface` value defined in Theme.  
+To change `backgroundColor` according to Light/Dark Theme, define `colorOnSurface` or use `Theme.Material`/`Theme.MaterialComponents` as a parent.  
+Otherwise, `backgroundColor` defaults to White.
 
 License
 =======
