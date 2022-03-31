@@ -38,7 +38,7 @@
         android:padding="@dimen/square_button_padding"
         android:visibility="visible"
         android:layout_marginLeft="@dimen/search_bar_left_icon_left_margin"
-        app:tint="?attr/colorControlNormal"/>
+        app:tint="@color/dark_gray"/>
 
     <TextView
         android:id="@+id/body"
@@ -69,7 +69,6 @@
         android:rotation="45"
         android:src="@drawable/arrow_left"
         android:visibility="visible"
-        android:layout_marginRight="@dimen/search_bar_right_icon_right_margin"
-        app:tint="?attr/colorControlNormal" />
+        android:layout_marginRight="@dimen/search_bar_right_icon_right_margin"/>
 
 </LinearLayout>

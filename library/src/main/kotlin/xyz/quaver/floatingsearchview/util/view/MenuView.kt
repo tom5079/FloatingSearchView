@@ -36,6 +36,7 @@ import androidx.appcompat.view.menu.SubMenuBuilder
 import androidx.core.content.ContextCompat
 import xyz.quaver.floatingsearchview.R
 import xyz.quaver.floatingsearchview.util.MenuPopupHelper
+import xyz.quaver.floatingsearchview.util.setIconColor
 import kotlin.math.min
 
 private const val HIDE_IF_ROOM_ITEMS_ANIM_DURATION = 400L
@@ -64,6 +65,29 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
     var visibleWidth: Int = 0
         private set
+
+    var actionIconColor: Int = -1
+        set(color) {
+            field = color
+            refreshColor()
+        }
+
+    var overflowColor: Int = -1
+        set(color) {
+            field = color
+            refreshColor()
+        }
+
+    private fun refreshColor() {
+        repeat(childCount) { i ->
+            val child = getChildAt(i) as ImageView
+
+            child.setIconColor(
+                if (hasOverflow && i == childCount-1) overflowColor
+                else actionIconColor
+            )
+        }
+    }
 
     /**
      * Resets the the view to fit into a new
@@ -135,6 +159,7 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
             addView(createActionView().apply {
                 contentDescription = it.title
                 setImageDrawable(it.icon)
+                setIconColor(actionIconColor)
 
                 setOnClickListener { _ ->
                     (it.subMenu as? SubMenuBuilder)?.let { subMenu ->
@@ -152,6 +177,7 @@ class MenuView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         if (hasOverflow) {
             addView(createOverflowActionView().apply {
                 setImageDrawable(ContextCompat.getDrawable(context, R.drawable.dots_vertical))
+                setIconColor(overflowColor)
 
                 setOnClickListener {
                     menuPopupHelper.show()

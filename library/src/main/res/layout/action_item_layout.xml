@@ -29,5 +29,4 @@
     android:clickable="true"
     android:focusable="true"
     android:background="?attr/selectableItemBackgroundBorderless"
-    app:tint="?attr/colorControlNormal"
     android:src="@drawable/history" />

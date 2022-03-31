@@ -25,6 +25,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
@@ -35,7 +36,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+
+import com.google.android.material.color.MaterialColors;
 
 import java.util.List;
 
@@ -45,6 +50,7 @@ import xyz.quaver.floatingsearchview.sample.R;
 import xyz.quaver.floatingsearchview.sample.data.ColorSuggestion;
 import xyz.quaver.floatingsearchview.sample.data.DataHelper;
 import xyz.quaver.floatingsearchview.suggestions.model.SearchSuggestion;
+import xyz.quaver.floatingsearchview.util.UtilKt;
 
 
 public class SlidingSearchViewExampleFragment extends BaseExampleFragment {
@@ -237,8 +243,7 @@ public class SlidingSearchViewExampleFragment extends BaseExampleFragment {
             String textLight = mIsDarkSearchTheme ? "#bfbfbf" : "#787878";
 
             if (colorSuggestion.getIsHistory()) {
-                binding.leftIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(),
-                        R.drawable.history, null));
+                binding.leftIcon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.history));
 
                 /*TODO Util.setIconColor(leftIcon, Color.parseColor(textColor));*/
                 binding.leftIcon.setAlpha(.36f);

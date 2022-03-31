@@ -99,7 +99,6 @@
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:tint="?attr/colorControlNormal"
             app:layout_constraintEnd_toStartOf="@id/menu_view"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>

@@ -30,6 +30,5 @@
     android:focusable="true"
     android:layout_marginEnd="@dimen/search_bar_right_icon_right_margin"
     android:layout_marginRight="@dimen/search_bar_right_icon_right_margin"
-    app:tint="?attr/colorControlNormal"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" />

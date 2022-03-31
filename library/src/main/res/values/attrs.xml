@@ -45,6 +45,18 @@
         <attr name="close_search_on_keyboard_dismiss" format="boolean"/>
         <attr name="menu" format="reference"/>
         <attr name="dimBackground" format="boolean"/>
-        <attr name="arrelevation" format="dimension"/>
+        <attr name="elevation" format="dimension"/>
+
+        <attr name="leftActionColor" format="color"/>
+        <attr name="viewTextColor" format="color"/>
+        <attr name="viewSearchInputTextColor" format="color"/>
+        <attr name="hintTextColor" format="color"/>
+        <attr name="viewSuggestionItemTextColor" format="color"/>
+        <attr name="menuItemIconColor" format="color"/>
+        <attr name="actionMenuOverflowColor" format="color"/>
+        <attr name="clearBtnColor" format="color"/>
+        <attr name="backgroundColor" format="color"/>
+        <attr name="dividerColor" format="color"/>
+        <attr name="suggestionRightIconColor" format="color"/>
     </declare-styleable>
 </resources>

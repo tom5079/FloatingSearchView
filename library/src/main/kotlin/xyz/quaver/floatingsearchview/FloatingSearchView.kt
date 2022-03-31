@@ -42,11 +42,13 @@ import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuItemImpl
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.*
 import androidx.core.widget.addTextChangedListener
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 import xyz.quaver.floatingsearchview.databinding.FloatingSearchLayoutBinding
 import xyz.quaver.floatingsearchview.suggestions.OnBindSuggestionCallback
 import xyz.quaver.floatingsearchview.suggestions.SearchSuggestionsAdapter
@@ -56,6 +58,7 @@ import xyz.quaver.floatingsearchview.util.adapter.GestureDetectorListenerAdapter
 import xyz.quaver.floatingsearchview.util.adapter.OnItemTouchListenerAdapter
 import kotlin.math.abs
 import kotlin.math.min
+import kotlin.properties.Delegates
 
 private const val CLEAR_BTN_FADE_ANIM_DURATION = 500L
 private const val CLEAR_BTN_WIDTH_DP = 48
@@ -209,9 +212,9 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
         private set
 
     val menuBtnDrawable: DrawerArrowDrawable = DrawerArrowDrawable(context)
-    val iconBackArrow: Drawable? = ContextCompat.getDrawable(context, R.drawable.arrow_left)
-    val iconClear: Drawable? = ContextCompat.getDrawable(context, R.drawable.close)
-    val iconSearch: Drawable? = ContextCompat.getDrawable(context, R.drawable.magnify)
+    val iconBackArrow: Drawable = ContextCompat.getDrawable(context, R.drawable.arrow_left)!!
+    val iconClear: Drawable = ContextCompat.getDrawable(context, R.drawable.close)!!
+    val iconSearch: Drawable = ContextCompat.getDrawable(context, R.drawable.magnify)!!
 
     var leftActionMode: LeftActionMode = LeftActionMode.NO_ACTION
         set(value) {
@@ -276,6 +279,80 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
     var onClearSearchActionListener: (() -> Unit)? = null
     var onSuggestionsListHeightChanged: ((newHeight: Float) -> Unit)? = null
     private var suggestionSecHeightListener: (() -> Unit)? = null
+
+    private var mBackgroundColor by Delegates.notNull<Int>()
+    override fun setBackgroundColor(color: Int) {
+        mBackgroundColor = color
+
+        binding.querySection.searchQuerySection.setCardBackgroundColor(color)
+        binding.suggestionSection.suggestionsList.setBackgroundColor(color)
+    }
+
+    var leftActionIconColor: Int = -1
+        set(color) {
+            field = color
+
+            menuBtnDrawable.color = color
+            DrawableCompat.setTint(iconBackArrow, color)
+            DrawableCompat.setTint(iconSearch, color)
+        }
+
+    var clearBtnColor: Int = -1
+        set(color) {
+            field = color
+
+            DrawableCompat.setTint(iconClear, color)
+        }
+
+    var menuItemIconColor: Int = -1
+        set(color) {
+            field = color
+            binding.querySection.menuView.actionIconColor = color
+        }
+
+    var actionMenuOverflowColor: Int = -1
+        set(color) {
+            field = color
+            binding.querySection.menuView.overflowColor = color
+        }
+
+    var viewTextColor: Int = -1
+        set(color) {
+            field = color
+            suggestionsTextColor = color
+            queryTextColor = color
+        }
+
+    var suggestionsTextColor: Int = -1
+        set(color) {
+            field = color
+            suggestionsAdapter?.textColor = color
+        }
+
+    var queryTextColor: Int = -1
+        set(color) {
+            field = color
+            binding.querySection.searchBarText.setTextColor(color)
+        }
+
+    var hintTextColor: Int = -1
+        set(color) {
+            field = color
+            binding.querySection.searchBarText.setHintTextColor(color)
+        }
+
+    var dividerColor: Int = -1
+        set(color) {
+            field = color
+            binding.divider.setBackgroundColor(color)
+        }
+
+    var suggestionsRightIconColor: Int = -1
+        set(color) {
+            field = color
+            suggestionsAdapter?.rightIconColor = color
+        }
+
     //endregion
 
     //region init
@@ -447,6 +524,8 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
             suggestionsAdapter?.apply {
                 showRightMoveUpBtn = showMoveUpSuggestion
                 adapter = suggestionsAdapter
+                textColor = suggestionsTextColor
+                rightIconColor = suggestionsRightIconColor
             }
 
             binding.suggestionSection.suggestionsList.adapter = suggestionsAdapter
@@ -455,7 +534,7 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
 
     private fun applyAttributes(attrs: TypedArray) = try {
         elevation = attrs.getDimensionPixelSize(
-            R.styleable.FloatingSearchView_arrelevation,
+            R.styleable.FloatingSearchView_elevation,
             dpToPx(4)
         ).also { elevation ->
             binding.querySection.root.cardElevation = elevation.toFloat()
@@ -530,7 +609,60 @@ open class FloatingSearchView @JvmOverloads constructor(context: Context, attrs:
             Defaults.suggestionAnimDuration.toInt()
         ).toLong()
 
-        // TODO("COLORS?")
+        setBackgroundColor(attrs.getColor(
+            R.styleable.FloatingSearchView_backgroundColor,
+            MaterialColors.getColor(this, R.attr.colorSurface)
+        ))
+
+        leftActionIconColor = attrs.getColor(
+            R.styleable.FloatingSearchView_leftActionColor,
+            ContextCompat.getColor(context, R.color.dark_gray)
+        )
+
+        actionMenuOverflowColor = attrs.getColor(
+            R.styleable.FloatingSearchView_actionMenuOverflowColor,
+            ContextCompat.getColor(context, R.color.dark_gray)
+        )
+
+        menuItemIconColor = attrs.getColor(
+            R.styleable.FloatingSearchView_menuItemIconColor,
+            ContextCompat.getColor(context, R.color.dark_gray)
+        )
+
+        dividerColor = attrs.getColor(
+            R.styleable.FloatingSearchView_dividerColor,
+            ContextCompat.getColor(context, R.color.dark_gray)
+        )
+
+        clearBtnColor = attrs.getColor(
+            R.styleable.FloatingSearchView_clearBtnColor,
+            ContextCompat.getColor(context, R.color.dark_gray)
+        )
+
+        viewTextColor = attrs.getColor(
+            R.styleable.FloatingSearchView_viewTextColor,
+            ContextCompat.getColor(context, R.color.dark_gray)
+        )
+
+        queryTextColor = attrs.getColor(
+            R.styleable.FloatingSearchView_viewSearchInputTextColor,
+            viewTextColor
+        )
+
+        suggestionsTextColor = attrs.getColor(
+            R.styleable.FloatingSearchView_viewSuggestionItemTextColor,
+            viewTextColor
+        )
+
+        hintTextColor = attrs.getColor(
+            R.styleable.FloatingSearchView_hintTextColor,
+            viewTextColor
+        )
+
+        suggestionsRightIconColor = attrs.getColor(
+            R.styleable.FloatingSearchView_suggestionRightIconColor,
+            ContextCompat.getColor(context, R.color.dark_gray)
+        )
     } finally { attrs.recycle() }
     //endregion
     

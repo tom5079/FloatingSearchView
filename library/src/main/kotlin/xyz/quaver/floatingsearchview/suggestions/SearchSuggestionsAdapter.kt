@@ -26,6 +26,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import xyz.quaver.floatingsearchview.databinding.SearchSuggestionItemBinding
 import xyz.quaver.floatingsearchview.suggestions.model.SearchSuggestion
+import xyz.quaver.floatingsearchview.util.setIconColor
 
 typealias OnBindSuggestionCallback = (
     binding: SearchSuggestionItemBinding,
@@ -68,6 +69,9 @@ class SearchSuggestionsAdapter(
 
             binding.body.text = item.body
 
+            binding.body.setTextColor(textColor)
+            binding.rightIcon.setIconColor(rightIconColor)
+
             onBindSuggestionCallback?.invoke(binding, item, position)
         }
 
@@ -91,6 +95,22 @@ class SearchSuggestionsAdapter(
             field = value
 
             notifyDataSetChanged()
+        }
+
+    var textColor: Int = -1
+        set(color) {
+            if (field != color) {
+                field = color
+                notifyDataSetChanged()
+            }
+        }
+
+    var rightIconColor: Int = -1
+        set(color) {
+            if (field != color) {
+                field = color
+                notifyDataSetChanged()
+            }
         }
 
     fun swapData(searchSuggestions: List<SearchSuggestion>) {

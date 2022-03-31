@@ -30,6 +30,9 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.widget.ImageViewCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -73,6 +76,20 @@ val Context.hostActivity: Activity?
         }
 
         return null
+    }
+
+fun ImageView.setIconColor(color: Int) {
+    setImageDrawable(DrawableCompat.wrap(drawable).apply {
+        DrawableCompat.setTint(this, color)
+    })
+    invalidate()
+}
+
+fun Context.getThemeColor(attr: Int) =
+    obtainStyledAttributes(intArrayOf(attr)).run {
+        getColor(0, 0).also {
+            recycle()
+        }
     }
 
 @Deprecated("")

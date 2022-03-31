@@ -19,4 +19,8 @@
   -->
 
 <resources>
+    <color name="gray_active_icon">#787878</color>
+    <color name="dark_gray">#787878</color>
+    <color name="divider">#F0F0F0</color>
+    <color name="hint_color">#808080</color>
 </resources>

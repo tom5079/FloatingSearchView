@@ -3,10 +3,22 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.13333333333333333" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2489868287740628" />
         <entry key="app/src/main/res/layout/fragment_scrolling_search_example.xml" value="0.2489868287740628" />
         <entry key="app/src/main/res/layout/fragment_sliding_search_example.xml" value="0.2489868287740628" />
         <entry key="app/src/main/res/layout/fragment_sliding_search_results_example_fragment.xml" value="0.2489868287740628" />
+        <entry key="app/src/main/res/layout/search_results_list_item.xml" value="0.5119791666666667" />
+        <entry key="library/src/main/res/drawable/arrow_left.xml" value="0.1725" />
+        <entry key="library/src/main/res/drawable/close.xml" value="0.1725" />
+        <entry key="library/src/main/res/drawable/dots_vertical.xml" value="0.1725" />
+        <entry key="library/src/main/res/drawable/history.xml" value="0.1725" />
+        <entry key="library/src/main/res/drawable/magnify.xml" value="0.1725" />
+        <entry key="library/src/main/res/layout/action_item_layout.xml" value="0.5119791666666667" />
+        <entry key="library/src/main/res/layout/overflow_action_item_layout.xml" value="0.5119791666666667" />
+        <entry key="library/src/main/res/layout/search_query_section.xml" value="0.496875" />
+        <entry key="library/src/main/res/layout/search_suggestion_item.xml" value="0.5119791666666667" />
+        <entry key="library/src/main/res/layout/search_suggestions_section.xml" value="0.5119791666666667" />
       </map>
     </option>
   </component>

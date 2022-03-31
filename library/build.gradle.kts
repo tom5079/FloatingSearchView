@@ -26,7 +26,7 @@ plugins {
 }
 
 group = "xyz.quaver"
-version = "1.1.4"
+version = "1.2.0-rc1"
 
 android {
     compileSdk = 31
@@ -139,5 +139,9 @@ afterEvaluate {
                 }
             }
         }
+    }
+
+    signing {
+        sign(publishing.publications)
     }
 }
