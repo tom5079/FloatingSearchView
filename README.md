@@ -33,7 +33,7 @@ implementation 'xyz.quaver:floatingsearchview:1.2.0-rc2'
     app:searchBarMarginTop="@dimen/search_view_inset"
     app:searchBarMarginRight="@dimen/search_view_inset"
     app:searchHint="Search..."
-    app:suggestionsAnimDuration="250"
+    app:suggestionAnimDuration="250"
     app:showSearchKey="false"
     app:leftActionMode="showHamburger"
     app:menu="@menu/menu_main"
